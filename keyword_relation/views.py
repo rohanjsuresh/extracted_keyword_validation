@@ -9,6 +9,10 @@ def home(request):
 def keyword_pages(request):
     return render(request, 'keyword_relation/keyword_pages_default.html', {})
 
+def verify_relationship_tool(request):
+    return render(request, 'keyword_relation/keyword_rel_tool.html', {})
+
+
 def dynamic_lookup_view(request, keyword):
     obj = Keyword_Pages.objects.get(keyword=keyword)
     context = {

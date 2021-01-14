@@ -75,15 +75,14 @@
               Home
             </a>
           </li>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'verify_relationship_tool' %}">
-            <span data-feather="user-check"></span>
-            Verify Keyword Relationship Tool
-          </a>
-        </li>
           <li class="nav-item">
             <a class="nav-link active">
+              <span data-feather="user-check"></span>
+              Verify Keyword Relationship Tool
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'keyword_pages' %}">
               <span data-feather="file"></span>
               Keyword Pages
             </a>
@@ -153,7 +152,7 @@
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1>{{keyword}}</h1>
+        <h1>Keyword Pages</h1>
         <!-- <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -168,26 +167,9 @@
 
       <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
 
-      <h3>Other Users Have Matched This Keyword With:</h3>
-      <div class="table-responsive">
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>Relationship With Keyword</th>
-              <th># Confirmed</th>
-              <th># Rejected</th>
-            </tr>
-          </thead>
-          <tbody id="list_matched">
-            <tr>
-              <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td>dolor</td>
-              <td>sit</td>
-            </tr>
-          </tbody>
-        </table>
+      <h3>Use the search bar to find relationships for a given keyword.</h3>
+      <div id="list_matched" class="h3">
+
       </div>
     </main>
   </div>
@@ -202,22 +184,18 @@
       function list_matched() {
         var matched_str = document.getElementById("matched").innerHTML;
         var res = matched_str.split(",");
-        var html = "";
+        var html = "<ul>"
         for (var i = 0; i < res.length; i++) {
-          var res2 = res[i].split("|");
-          html = html.concat("<tr>");
-          for (var j = 0; j < res2.length; j++) {
-            html = html.concat("<td>");
-            html = html.concat(res2[j]);
-            html = html.concat("</td>");
-          }
-          html = html.concat("</tr>");
+          html = html.concat("<li>");
+          html = html.concat(res[i]);
+          html = html.concat("</li>");
         }
+        html = html.concat("</ul>");
         document.getElementById("list_matched").innerHTML = html
       }
 
       window.onload = function() {
-        list_matched();
+        // list_matched();
       }
     </script>
   </body>
