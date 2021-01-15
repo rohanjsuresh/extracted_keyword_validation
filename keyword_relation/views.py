@@ -71,7 +71,6 @@ def verify_relationship_tool(request):
         if found >= 5:
             break
 
-
     context["title_str"] = title_str
     context["abstract_str"] = abstract_str
     context["linked_title"] = linked_title

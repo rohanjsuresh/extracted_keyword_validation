@@ -214,7 +214,9 @@
 
         var title_str = document.getElementById("title_str").innerHTML;
         var abstract_str = document.getElementById("abstract_str").innerHTML;
-        var linked_title = document.getElementById("linked_title").innerHTML;
+        var linked_title = document.getElementById("linked_title").innerHTML
+        var keyword_fst = document.getElementById("grab_keyword_fst").innerHTML;
+        var keyword_snd = document.getElementById("grab_keyword_snd").innerHTML;
         var html = "";
 
 
@@ -255,6 +257,9 @@
         if (html.length == 0) {
           html = "<p>No Arixv information found. Please refresh the page to try again.</p><br>";
         }
+
+        html = html.replace(keyword_fst, "<mark>"+keyword_fst+"</mark>");
+        html = html.replace(keyword_snd, "<mark>"+keyword_snd+"</mark>");
 
         document.getElementById("arxiv_data").innerHTML = html;
 
