@@ -50,7 +50,7 @@
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <form method="post" action="/search/">
+  <form method="post" action="/search/" target="_blank">
     {% csrf_token %}
     <input class="form-control form-control-dark w-100" type="text" placeholder="Search Keywords" aria-label="Search" name="search_input" id="search_input">
   </form>
@@ -60,8 +60,6 @@
     </li>
   </ul>
 </header>
-
-<p id="matched" hidden>{{matched}}</p>
 
 <div class="container-fluid">
   <div class="row">
@@ -152,25 +150,56 @@
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1>Keyword Pages</h1>
-        <!-- <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        <h1>Are the following keywords related:</h1>
+      </div>
+      <div style="white-space: nowrap;display: inline-block;clear: both;width: 50%;margin-left: 25%;">
+        <h2 style="float: left"><a href="{% url 'dynamic_lookup_view' keyword=keyword_fst %}" target="_blank">{{ keyword_fst }}</a></h2>
+        <h2 style="float: right"><a href="{% url 'dynamic_lookup_view' keyword=keyword_snd %}" target="_blank">{{ keyword_snd }}</a></h2>
+        <p id = "grab_keyword_fst" hidden>{{ keyword_fst }}</p>
+        <p id = "grab_keyword_snd" hidden>{{ keyword_snd }}</p>
+      </div>
+
+      <div>
+        <form method="post" action="/add_entry/" style="padding-top: 5%;">
+          {% csrf_token %}
+          <div style="text-align: center; padding-bottom: 25px;display:inline">
+            <div style="float: left; margin-left: 25%">
+              <p style="font-size: 16px;"><strong>Do these words have a relationship?</strong></p>
+            </div>
+            <div>
+              <input type="radio" id="user_input_yes" name="user_input" value="Yes">
+                <label for="Yes">Yes</label><br>
+              <input type="radio" id="user_input_no" name="user_input" value="No">
+                <label for="No">No</label><br>
+            </div>
+
+            <!-- keywords -->
+            <input name="keyword_fst_response" id="keyword_fst_response" type="text" hidden>
+            <input name="keyword_snd_response" id="keyword_snd_response" type="text" hidden>
+
+            <input type="submit" class="btn btn-light" style="font-size: 30px;" id="actual_submit" value="Submit This Keyword"></input>
           </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-          </button>
-        </div> -->
+        </form>
       </div>
 
-      <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
+      <h3>Click on keywords for further information.</h3>
+      <h3>More Information Below: </h3>
 
-      <h3>Use the search bar to find relationships for a given keyword.</h3>
-      <div id="list_matched" class="h3">
+      <!-- for getting data -->
+      <p hidden id="title_str">{{ title_str }}</p>
+      <p hidden id="abstract_str">{{ abstract_str }}</p>
+      <p hidden id="linked_title">{{ linked_title }}</p>
+      <p hidden id="related_fst">{{ related_fst }}</p>
+      <p hidden id="related_snd">{{ related_snd }}</p>
+
+      <div id="model_data">
 
       </div>
+
+      <div id="arxiv_data">
+
+      </div>
+
     </main>
   </div>
 </div>
@@ -180,23 +209,99 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="{% static 'dashboard.js' %}"></script>
     <script>
 
-      // list keywords with relationship
-      function list_matched() {
-        var matched_str = document.getElementById("matched").innerHTML;
-        var res = matched_str.split(",");
-        var html = "<ul>"
-        for (var i = 0; i < res.length; i++) {
-          html = html.concat("<li>");
-          html = html.concat(res[i]);
-          html = html.concat("</li>");
+      // function to list arxiv data underneath
+      function display_arxiv() {
+
+        var title_str = document.getElementById("title_str").innerHTML;
+        var abstract_str = document.getElementById("abstract_str").innerHTML;
+        var linked_title = document.getElementById("linked_title").innerHTML;
+        var html = "";
+
+
+        if (title_str.length != 0) {
+          html = html.concat("<hr>");
+          html = html.concat("<strong><h3>Arxiv Titles Containing Keywords:</h3></strong>")
+          var res = title_str.split("|");
+          html = html.concat("<ul>");
+          for (var i = 0; i < res.length; i++) {
+            html = html.concat("<li>");
+            html = html.concat(res[i]);
+            html = html.concat("</li>");
+          }
+          html = html.concat("</ul>");
         }
-        html = html.concat("</ul>");
-        document.getElementById("list_matched").innerHTML = html
+
+
+        if (abstract_str.length != 0) {
+          html = html.concat("<hr>");
+          html = html.concat("<strong><h3>Arxiv Abtracts Containing Keywords:</h3></strong>")
+          var res = abstract_str.split("|");
+          var res2 = linked_title.split("|");
+          html = html.concat("<ul>");
+          for (var i = 0; i < res.length; i++) {
+            html = html.concat("<li>");
+            html = html.concat("<strong>Title of Paper: </strong>");
+            html = html.concat(res2[i]);
+            html = html.concat("<br>")
+            html = html.concat("<strong>Abstract: </strong>");
+            html = html.concat(res[i]);
+            html = html.concat("</li>");
+            
+          }
+          html = html.concat("</ul>");
+        }
+
+        // if no info found
+        if (html.length == 0) {
+          html = "<p>No Arixv information found. Please refresh the page to try again.</p><br>";
+        }
+
+        document.getElementById("arxiv_data").innerHTML = html;
+
+      }
+
+      function display_graph_rel() {
+        var related_fst = document.getElementById("related_fst").innerHTML;
+        var keyword_fst = document.getElementById("grab_keyword_fst").innerHTML;
+
+        var related_snd = document.getElementById("related_snd").innerHTML;
+        var keyword_snd = document.getElementById("grab_keyword_snd").innerHTML;
+        var html = "";
+
+        if (related_fst.length != 0) {
+          html = html.concat("<br><strong><h3>Words related to " + keyword_fst + "</h3></strong>");
+          var res = related_fst.split("|");
+          html = html.concat("<ul>");
+          for (var i = 0; i < res.length; i++) {
+            html = html.concat("<li>");
+            html =html.concat(res[i])
+            html = html.concat("</li>");
+          }
+          html = html.concat("</ul>");
+        }
+
+        if (related_snd.length != 0) {
+          html = html.concat("<br><strong><h3>Words related to " + keyword_snd + "</h3></strong>");
+          var res = related_snd.split("|");
+          html = html.concat("<ul>");
+          for (var i = 0; i < res.length; i++) {
+            html = html.concat("<li>");
+            html =html.concat(res[i])
+            html = html.concat("</li>");
+          }
+          html = html.concat("</ul>");
+        }
+
+        document.getElementById("model_data").innerHTML = html;
       }
 
       window.onload = function() {
-        // list_matched();
+        document.getElementById("keyword_fst_response").value = document.getElementById("grab_keyword_fst").innerHTML;
+        document.getElementById("keyword_snd_response").value = document.getElementById("grab_keyword_snd").innerHTML;
+        display_arxiv();
+        display_graph_rel();
       }
+
     </script>
   </body>
 </html>

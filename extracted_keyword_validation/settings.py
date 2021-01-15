@@ -132,6 +132,7 @@ STATICFILES_DIRS = [
     # Bootstrap
     os.path.join(BASE_DIR, 'boot'),
     os.path.join(BASE_DIR, 'arxiv_data'),
+    os.path.join(BASE_DIR, 'models'),
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

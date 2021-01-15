@@ -7,4 +7,5 @@ urlpatterns = [
     path('keyword_pages', views.keyword_pages, name='keyword_pages'),
     path('verify_relationship_tool', views.verify_relationship_tool, name='verify_relationship_tool'),
     path(r'search/', views.search, name='search'),
+    path(r'add_entry/', views.add_entry, name='add_entry'),
 ]
