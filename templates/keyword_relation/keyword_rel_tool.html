@@ -222,7 +222,7 @@
 
         if (title_str.length != 0) {
           html = html.concat("<hr>");
-          html = html.concat("<strong><h3>Arxiv Titles Containing Keywords:</h3></strong>")
+          html = html.concat("<strong><h3>Arxiv Titles Containing Both Keywords:</h3></strong>")
           var res = title_str.split("|");
           html = html.concat("<ul>");
           for (var i = 0; i < res.length; i++) {
@@ -236,7 +236,7 @@
 
         if (abstract_str.length != 0) {
           html = html.concat("<hr>");
-          html = html.concat("<strong><h3>Arxiv Abtracts Containing Keywords:</h3></strong>")
+          html = html.concat("<strong><h3>Arxiv Abtracts Containing Both Keywords:</h3></strong>")
           var res = abstract_str.split("|");
           var res2 = linked_title.split("|");
           html = html.concat("<ul>");
@@ -258,8 +258,10 @@
           html = "<p>No Arixv information found. Please refresh the page to try again.</p><br>";
         }
 
-        html = html.replace(keyword_fst, "<mark>"+keyword_fst+"</mark>");
-        html = html.replace(keyword_snd, "<mark>"+keyword_snd+"</mark>");
+        var regEx = new RegExp(keyword_fst, "ig");
+        html = html.replace(regEx, "<mark>"+keyword_fst+"</mark>");
+        var regEx = new RegExp(keyword_snd, "ig");
+        html = html.replace(regEx, "<mark>"+keyword_snd+"</mark>");
 
         document.getElementById("arxiv_data").innerHTML = html;
 

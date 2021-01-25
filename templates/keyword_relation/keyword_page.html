@@ -153,7 +153,7 @@
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1>{{keyword}}</h1>
+        <h1 id="grab_keyword_fst">{{keyword}}</h1>
         <!-- <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -179,19 +179,19 @@
             </tr>
           </thead>
           <tbody id="list_matched">
-            <tr>
-              <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td>dolor</td>
-              <td>sit</td>
-            </tr>
+
           </tbody>
         </table>
+      </div>
+      <p hidden id="related_fst">{{ related_fst }}</p>
+      <div id="model_data">
+
       </div>
     </main>
   </div>
 </div>
+
+
 
 
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
@@ -216,8 +216,31 @@
         document.getElementById("list_matched").innerHTML = html
       }
 
+
+      function display_graph_rel() {
+        var related_fst = document.getElementById("related_fst").innerHTML;
+        var keyword_fst = document.getElementById("grab_keyword_fst").innerHTML;
+
+        var html = "";
+
+        if (related_fst.length != 0) {
+          html = html.concat("<br><strong><h3>Words related to " + keyword_fst + "</h3></strong>");
+          var res = related_fst.split("|");
+          html = html.concat("<ul>");
+          for (var i = 0; i < res.length; i++) {
+            html = html.concat("<li>");
+            html =html.concat(res[i])
+            html = html.concat("</li>");
+          }
+          html = html.concat("</ul>");
+        }
+
+        document.getElementById("model_data").innerHTML = html;
+      }
+
       window.onload = function() {
         list_matched();
+        display_graph_rel();
       }
     </script>
   </body>

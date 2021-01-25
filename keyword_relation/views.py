@@ -10,6 +10,7 @@ from django.conf import settings
 import numpy as np
 import random
 from gensim.models import Word2Vec
+import wikipedia
 
 
 # Create your views here.
@@ -17,8 +18,53 @@ from gensim.models import Word2Vec
 def home(request):
     return render(request, 'keyword_relation/index.html', {})
 
+
 def keyword_pages(request):
-    return render(request, 'keyword_relation/keyword_pages_default.html', {})
+    #render spreadsheet
+    all_keywords = Keyword_Pages.objects.all()
+
+    context = {}
+    keyword_str = ""
+    wikipedia_content_str = ""
+    related_keywords_str = ""
+    first = True
+
+    for keywords in all_keywords:
+        if first:
+            keyword_str += keywords.keyword 
+        else: 
+            keyword_str += "|" + keywords.keyword
+
+        # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
+        try:
+            if first:
+                wikipedia_content_str += wikipedia.summary(keywords.keyword, sentences=1)
+            else: 
+                wikipedia_content_str += "|" + wikipedia.summary(keywords.keyword, sentences=1)
+
+        except wikipedia.DisambiguationError as e:
+            s = e.options[0]
+            if first:
+                wikipedia_content_str += wikipedia.summary(s, sentences=1)
+            else: 
+                wikipedia_content_str += "|" + wikipedia.summary(s, sentences=1)
+
+        if first:
+            related_keywords_str += keywords.matched_with 
+        else: 
+            # Different delimeter used because DB uses '|' and ',' as delimeter
+            related_keywords_str += "&" + keywords.matched_with
+
+        first = False
+
+    context["keywords"] = keyword_str 
+    context["wikipedia_content"] = wikipedia_content_str
+    context["related_keywords"] = related_keywords_str
+
+    print(keyword_str)
+    print(related_keywords_str)
+
+    return render(request, 'keyword_relation/keyword_pages_default.html', context)
 
 def verify_relationship_tool(request):
     # get random row from relationship in circulation table
@@ -46,12 +92,14 @@ def verify_relationship_tool(request):
     print("loaded")
 
     found = 0
-    first = True
+    first_title = True
+    first_abstract = True
     for i in range(200000):
         idx = random.randint(0, len(titles)-1)
         if keyword_fst in titles[idx] and keyword_snd in titles[idx]:
-            if first:
+            if first_title:
                 title_str += titles[idx]
+                first_title = False
             else:
                 title_str += "|" + titles[idx]
 
@@ -59,9 +107,10 @@ def verify_relationship_tool(request):
 
         idx = random.randint(0, len(titles)-1)
         if keyword_fst in abstracts[idx] and keyword_snd in abstracts[idx]:
-            if first:
+            if first_abstract:
                 abstract_str += abstracts[idx]
                 linked_title += titles[idx]
+                first_abstract = False
             else:
                 abstract_str += "|" + abstracts[idx]
                 linked_title += "|" + titles[idx]
@@ -70,6 +119,8 @@ def verify_relationship_tool(request):
 
         if found >= 5:
             break
+
+    print("FOUND: ", found)
 
     context["title_str"] = title_str
     context["abstract_str"] = abstract_str
@@ -169,6 +220,15 @@ def dynamic_lookup_view(request, keyword):
         "keyword":obj.keyword.capitalize(),
         "matched":obj.matched_with,
     }
+
+    # models
+    model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
+    model = Word2Vec.load(model_path)
+
+    related_fst = find_similar_keywords(model, obj.keyword.lower())
+
+    context["related_fst"] = related_fst
+
     return render(request, 'keyword_relation/keyword_page.html', context)
 
 def search(request):

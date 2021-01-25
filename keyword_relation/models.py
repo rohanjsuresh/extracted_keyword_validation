@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+
 class Pairs_In_Circulation(models.Model):
     keyword_fst = models.CharField(max_length=512)
     keyword_snd = models.CharField(max_length=512)
