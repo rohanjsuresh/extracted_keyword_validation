@@ -184,8 +184,14 @@
           record = record.concat("<tr>");
           
           record = record.concat("<td>");
+          record = record.concat("<a href=\"/keyword_pages/");
           record = record.concat(keywords_str_res[i]);
+          record = record.concat("\" target=\"_blank\">");
+          record = record.concat(keywords_str_res[i]);
+          record = record.concat("</a>");
           record = record.concat("</td>");
+
+          // alert("hit");
 
           record = record.concat("<td>");
           record = record.concat(wikipedia_content_str_res[i]);

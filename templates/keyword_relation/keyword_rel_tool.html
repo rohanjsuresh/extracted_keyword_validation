@@ -149,18 +149,37 @@
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1>Are the following keywords related:</h1>
+      <!-- <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        
+      </div> -->
+      <div style="padding-bottom: 25px;padding-top: 15px;">
+        <h3 style="display: inline-block;margin: 10px;">Please Select Keywords Related To:   </h3>
+        <button type="button" class="btn btn-primary">{{ keyword_main }}</button>
+        <p id = "grab_keyword_main" hidden>{{ keyword_main }}</p>
       </div>
-      <div style="white-space: nowrap;display: inline-block;clear: both;width: 50%;margin-left: 25%;">
-        <h2 style="float: left"><a href="{% url 'dynamic_lookup_view' keyword=keyword_fst %}" target="_blank">{{ keyword_fst }}</a></h2>
-        <h2 style="float: right"><a href="{% url 'dynamic_lookup_view' keyword=keyword_snd %}" target="_blank">{{ keyword_snd }}</a></h2>
-        <p id = "grab_keyword_fst" hidden>{{ keyword_fst }}</p>
-        <p id = "grab_keyword_snd" hidden>{{ keyword_snd }}</p>
+      <div style="padding-left: 10%;padding-top: 15px;">
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px">{{ match_0 }}</button>
+        <p id = "grab_match_0" hidden>{{ match_0 }}</p>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px">{{ match_1 }}</button>
+        <p id = "grab_match_1" hidden>{{ match_1 }}</p>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px">{{ match_2 }}</button>
+        <p id = "grab_match_2" hidden>{{ match_2 }}</p>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px">{{ match_3 }}</button>
+        <p id = "grab_match_3" hidden>{{ match_3 }}</p>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px">{{ match_4 }}</button>
+        <p id = "grab_match_4" hidden>{{ match_4 }}</p>
+      </div>
+
+      <div style="padding-left: 500px;padding-top: 15px;">
+        <button type="button" class="btn btn-success">Submit</button>
       </div>
 
       <div>
-        <form method="post" action="/add_entry/" style="padding-top: 5%;">
+        <!-- <form method="post" action="/add_entry/" style="padding-top: 5%;">
           {% csrf_token %}
           <div style="text-align: center; padding-bottom: 25px;display:inline">
             <div style="float: left; margin-left: 25%">
@@ -173,16 +192,12 @@
                 <label for="No">No</label><br>
             </div>
 
-            <!-- keywords -->
-            <input name="keyword_fst_response" id="keyword_fst_response" type="text" hidden>
-            <input name="keyword_snd_response" id="keyword_snd_response" type="text" hidden>
-
             <input type="submit" class="btn btn-light" style="font-size: 30px;" id="actual_submit" value="Submit This Keyword"></input>
           </div>
-        </form>
+        </form> -->
       </div>
 
-      <h3>Click on keywords for further information.</h3>
+      <!-- <h3>Click on keywords for further information.</h3> -->
       <h3>More Information Below: </h3>
 
       <!-- for getting data -->
@@ -200,6 +215,55 @@
 
       </div>
 
+      <!-- images -->
+
+      <div style="padding-left: 10%;padding-top: 15px;">
+        <button type="button" class="btn btn-primary" style="margin: 10px" id="info_0" onclick="info_selection('b0')">{{ match_0 }}</button>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px" id="info_1" onclick="info_selection('b1')">{{ match_1 }}</button>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px" id="info_2" onclick="info_selection('b2')">{{ match_2 }}</button>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px" id="info_3" onclick="info_selection('b3')">{{ match_3 }}</button>
+
+        <button type="button" class="btn btn-outline-primary" style="margin: 10px" id="info_4" onclick="info_selection('b4')">{{ match_4 }}</button>
+      </div>
+
+      <hr>
+
+      <h2>Related Keyword Graph Info:</h2>
+      <div id="graph_div" style="padding-bottom: 20px;">
+        
+      </div>
+
+      <h2>Arxiv Info:</h2>
+      <div id="arxiv_div" style="padding-bottom: 20px;">
+        
+      </div>
+      <!-- <ul>
+        <li><strong>Title:</strong> Lorem ipsum dolor sit amet</li>
+        <li><strong>Abstract:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+      </ul>
+
+      <ul>
+        <li><strong>Title:</strong> Lorem ipsum dolor sit amet</li>
+        <li><strong>Abstract:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
+      </ul> -->
+
+
+      <p id="grab_shortest_paths_0" hidden>{{ shortest_paths_0 }}</p>
+      <p id="grab_shortest_paths_1" hidden>{{ shortest_paths_1 }}</p>
+      <p id="grab_shortest_paths_2" hidden>{{ shortest_paths_2 }}</p>
+      <p id="grab_shortest_paths_3" hidden>{{ shortest_paths_3 }}</p>
+      <p id="grab_shortest_paths_4" hidden>{{ shortest_paths_4 }}</p>
+
+
+      <p id="grab_arxiv_info_0" hidden>{{ arxiv_info_0 }}</p>
+      <p id="grab_arxiv_info_1" hidden>{{ arxiv_info_1 }}</p>
+      <p id="grab_arxiv_info_2" hidden>{{ arxiv_info_2 }}</p>
+      <p id="grab_arxiv_info_3" hidden>{{ arxiv_info_3 }}</p>
+      <p id="grab_arxiv_info_4" hidden>{{ arxiv_info_4 }}</p>
+
     </main>
   </div>
 </div>
@@ -208,6 +272,86 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="{% static 'dashboard.js' %}"></script>
     <script>
+
+      function info_selection(button) {
+        var curr_id = "info_".concat(button[1]);
+
+        for (var i = 0; i < 5; i++) {
+          var temp_id =  "info_".concat(i.toString());
+          document.getElementById(temp_id).className = "btn btn-outline-primary";
+        }
+        document.getElementById(curr_id).className = "btn btn-primary";
+
+        // set graph info
+        set_graph_info(button);
+
+        // set arxiv info
+        set_arxiv_info(button);
+      }
+
+      function set_graph_info(button) {
+        var curr_id = button[1];
+
+        var path_id =  "grab_arxiv_info_".concat(curr_id);
+
+        var paths = document.getElementById(path_id).innerHTML;
+
+        
+
+        if (paths.localeCompare("NA") != 0) {
+          var res = paths.split("|");
+          var html = "<ul>";
+            
+          for (var i = 0; i < res.length-1; i++) {
+            html = html.concat("<li>");
+            html = html.concat(res[i]);
+            html = html.concat("</li>");
+          }
+          html = html.concat("</ul>");
+
+          var main_keyword = document.getElementById("grab_keyword_main").innerHTML;
+          var match_keyword = document.getElementById("grab_match_".concat(curr_id)).innerHTML;
+
+          html = html.replaceAll(main_keyword, "<strong>".concat(main_keyword.concat("</strong>")));
+          html = html.replaceAll(match_keyword, "<strong>".concat(match_keyword.concat("</strong>")));
+          
+          document.getElementById("arxiv_div").innerHTML = html;
+        } else {
+          document.getElementById("arxiv_div").innerHTML = "No Arxiv information found.";
+        }
+      }
+
+      function set_arxiv_info(button) {
+        var curr_id = button[1];
+
+        var path_id =  "grab_shortest_paths_".concat(curr_id);
+
+        var paths = document.getElementById(path_id).innerHTML;
+
+        
+
+        if (paths.localeCompare("NA") != 0) {
+          var res = paths.split("|");
+          var html = "<ul>";
+            
+          for (var i = 0; i < res.length-1; i++) {
+            html = html.concat("<li>");
+            html = html.concat(res[i]);
+            html = html.concat("</li>");
+          }
+          html = html.concat("</ul>");
+
+          var main_keyword = document.getElementById("grab_keyword_main").innerHTML;
+          var match_keyword = document.getElementById("grab_match_".concat(curr_id)).innerHTML;
+
+          html = html.replaceAll(main_keyword, "<strong>".concat(main_keyword.concat("</strong>")));
+          html = html.replaceAll(match_keyword, "<strong>".concat(match_keyword.concat("</strong>")));
+          
+          document.getElementById("graph_div").innerHTML = html;
+        } else {
+          document.getElementById("graph_div").innerHTML = "No paths found.";
+        }
+      }
 
       // function to list arxiv data underneath
       function display_arxiv() {
@@ -303,10 +447,11 @@
       }
 
       window.onload = function() {
-        document.getElementById("keyword_fst_response").value = document.getElementById("grab_keyword_fst").innerHTML;
-        document.getElementById("keyword_snd_response").value = document.getElementById("grab_keyword_snd").innerHTML;
-        display_arxiv();
-        display_graph_rel();
+        set_graph_info("b0"); 
+        // document.getElementById("keyword_fst_response").value = document.getElementById("grab_keyword_fst").innerHTML;
+        // document.getElementById("keyword_snd_response").value = document.getElementById("grab_keyword_snd").innerHTML;
+        // display_arxiv();
+        // display_graph_rel();
       }
 
     </script>

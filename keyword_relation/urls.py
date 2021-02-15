@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -8,4 +10,4 @@ urlpatterns = [
     path('verify_relationship_tool', views.verify_relationship_tool, name='verify_relationship_tool'),
     path(r'search/', views.search, name='search'),
     path(r'add_entry/', views.add_entry, name='add_entry'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

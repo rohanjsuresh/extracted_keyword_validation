@@ -187,6 +187,15 @@
       <div id="model_data">
 
       </div>
+
+      <div id="arxiv_data">
+
+      </div>
+
+       <!-- for getting data -->
+       <p hidden id="title_str">{{ title_str }}</p>
+       <p hidden id="abstract_str">{{ abstract_str }}</p>
+       <p hidden id="linked_title">{{ linked_title }}</p>
     </main>
   </div>
 </div>
@@ -224,7 +233,7 @@
         var html = "";
 
         if (related_fst.length != 0) {
-          html = html.concat("<br><strong><h3>Words related to " + keyword_fst + "</h3></strong>");
+          html = html.concat("<br><strong><h3>Words related to " + keyword_fst + "From Graph Embeddings</h3></strong>");
           var res = related_fst.split("|");
           html = html.concat("<ul>");
           for (var i = 0; i < res.length; i++) {
@@ -238,9 +247,70 @@
         document.getElementById("model_data").innerHTML = html;
       }
 
+      // function to list arxiv data underneath
+      function display_arxiv() {
+
+      var title_str = document.getElementById("title_str").innerHTML;
+      var abstract_str = document.getElementById("abstract_str").innerHTML;
+      var linked_title = document.getElementById("linked_title").innerHTML;
+      var keyword = document.getElementById("grab_keyword_fst").innerHTML;
+      var html = "";
+
+        
+
+      if (title_str.length != 0) {
+        html = html.concat("<hr>");
+        html = html.concat("<strong><h3>Arxiv Titles Containing Keyword:</h3></strong>")
+        var res = title_str.split("|");
+        html = html.concat("<ul>");
+        for (var i = 0; i < res.length; i++) {
+          html = html.concat("<li>");
+          html = html.concat(res[i]);
+          html = html.concat("</li>");
+        }
+        html = html.concat("</ul>");
+      }
+
+      
+
+
+      if (abstract_str.length != 0) {
+        html = html.concat("<hr>");
+        html = html.concat("<strong><h3>Arxiv Abtracts Containing Keyword:</h3></strong>")
+        var res = abstract_str.split("|");
+        var res2 = linked_title.split("|");
+        html = html.concat("<ul>");
+        for (var i = 0; i < res.length; i++) {
+          html = html.concat("<li>");
+          html = html.concat("<strong>Title of Paper: </strong>");
+          html = html.concat(res2[i]);
+          html = html.concat("<br>")
+          html = html.concat("<strong>Abstract: </strong>");
+          html = html.concat(res[i]);
+          html = html.concat("</li>");
+          
+        }
+        html = html.concat("</ul>");
+      }
+
+      // if no info found
+      if (html.length == 0) {
+        html = "<p>No Arixv information found. Please refresh the page to try again.</p><br>";
+      }
+
+      
+
+      var regEx = new RegExp(keyword, "ig");
+      html = html.replace(regEx, "<mark>"+keyword+"</mark>");
+
+      document.getElementById("arxiv_data").innerHTML = html;
+
+      }
+
       window.onload = function() {
         list_matched();
         display_graph_rel();
+        display_arxiv();
       }
     </script>
   </body>
