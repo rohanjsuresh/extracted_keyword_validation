@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'keyword_relation',
+    'domainness_tool',
     'crispy_forms',
 ]
 

@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path(r'', include('keyword_relation.urls')),
+    path(r'domainness_tool/', include('domainness_tool.urls')),
     path('admin/', admin.site.urls),
 ]
