@@ -56,11 +56,11 @@
   </form>
   <ul class="navbar-nav px-3">
     <li class="nav-item text-nowrap">
-      {% if user.is_authenticated %}
-      <a class="nav-link" href="{% url 'logout' %}" style="text-decoration: none; color: white;">Sign out</a>
-      {% else %}
-      <a href="{% url 'login' %}" style="text-decoration: none; color: white;">Login</a>
-      {% endif %}
+        {% if user.is_authenticated %}
+        <a class="nav-link" href="{% url 'logout' %}" style="text-decoration: none; color: white;">Sign out</a>
+        {% else %}
+        <a href="{% url 'login' %}" style="text-decoration: none; color: white;">Login</a>
+        {% endif %}
     </li>
   </ul>
 </header>
@@ -82,25 +82,36 @@
               Keyword Pages
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'verify_relationship_tool' %}">
-              <span data-feather="user-check"></span>
+          <l class="nav-item"i>
+              <p class="nav-link"><strong>NOTE:</strong> Tools will unlock once user is logged in</p>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#" title="Note:" data-toggle="popover" data-trigger="hover" data-content="Login to access tools">
+              <span data-feather="user-check" disabled></span>
               Verify Keyword Relationship Tool
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'verify_domain_tool' %}">
-              <span data-feather="user-check"></span>
+            <a class="nav-link" title="Note:" data-toggle="popover" data-trigger="hover" data-content="Login to access tools">
+              <span data-feather="user-check" disabled></span>
               Verify Domain Tool
             </a>
-          </li>
+          </li> -->
       </div>
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Hello {{ user.username|default:'Guest' }}!</h1>
+        <h1 class="h2">Register</h1>
       </div>
+      <div style="width:250px;">
+        <form method="post">
+            {% csrf_token %}
+            {{form}}
+            <input type="submit" value="Register">
+        </form>
+      </div>
+      <h4 style="padding-top: 25px;">Have an account? <a href="{% url 'login' %}" style="text-decoration: none;">Login</a></h4>
     </main>
   </div>
 </div>

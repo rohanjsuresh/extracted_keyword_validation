@@ -80,7 +80,11 @@
   </form>
   <ul class="navbar-nav px-3">
     <li class="nav-item text-nowrap">
-      <a class="nav-link" href="#">Sign out</a>
+      {% if user.is_authenticated %}
+      <a class="nav-link" href="{% url 'logout' %}" style="text-decoration: none; color: white;">Sign out</a>
+      {% else %}
+      <a href="{% url 'login' %}" style="text-decoration: none; color: white;">Login</a>
+      {% endif %}
     </li>
   </ul>
 </header>

@@ -15,10 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import include, url
+
 
 
 urlpatterns = [
     path(r'', include('keyword_relation.urls')),
     path(r'domainness_tool/', include('domainness_tool.urls')),
     path('admin/', admin.site.urls),
+    url(r"^accounts/", include("django.contrib.auth.urls")),
+    path(r"users/", include('users.urls')),
 ]
