@@ -124,25 +124,25 @@ def verify_relationship_tool(request):
     arxiv_info_arr = [arxiv_info_0, arxiv_info_1, arxiv_info_2, arxiv_info_3, arxiv_info_4]
 
     found = []
-    # first_title = True
-    # first_abstract = True
-    # for i in range(50000):
-    #     idx = random.randint(0, len(titles)-1)
-    #     for i in range(len(matching)):
-    #         if matching[i] in titles[idx] and keyword_main in titles[idx]:
-    #             temp = arxiv_info_arr[i]
-    #             temp += titles[idx] + "|"
-    #             arxiv_info_arr[i] = temp
+    first_title = True
+    first_abstract = True
+    for i in range(50000):
+        idx = random.randint(0, len(titles)-1)
+        for i in range(len(matching)):
+            if matching[i] in titles[idx] and keyword_main in titles[idx]:
+                temp = arxiv_info_arr[i]
+                temp += titles[idx] + "|"
+                arxiv_info_arr[i] = temp
 
-    #     for i in range(len(matching)):
-    #         if matching[i] in abstracts[idx] and keyword_main in abstracts[idx]:
-    #             temp = arxiv_info_arr[i]
-    #             for line in abstracts[idx].split("."):
-    #                 if matching[i] in line and keyword_main in line:
-    #                     temp += line + "|"
-    #             arxiv_info_arr[i] = temp
+        for i in range(len(matching)):
+            if matching[i] in abstracts[idx] and keyword_main in abstracts[idx]:
+                temp = arxiv_info_arr[i]
+                for line in abstracts[idx].split("."):
+                    if matching[i] in line and keyword_main in line:
+                        temp += line + "|"
+                arxiv_info_arr[i] = temp
 
-    # print("FOUND: ", found)
+    print("FOUND: ", found)
 
     for i in range(len(arxiv_info_arr)):
         if arxiv_info_arr[i] == "":

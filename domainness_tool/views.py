@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from django.apps import apps
 
 Keyword_Pages = apps.get_model('keyword_relation', 'Keyword_Pages')
+User_Validation = apps.get_model('keyword_relation', 'User_Validation')
 
 # Create your views here.
 
@@ -103,6 +104,28 @@ def find_similar_keywords(model, x):
         print(x, "not in graph")
         output="NA"
     return output
+
+
+def add_entry_domain_tool(request):
+
+    # get main keyword 
+    main_keyword = request.POST.get("input_keyword_main").lower()
+
+    # get user response
+    user_response = request.POST.get("user_selection")
+
+    if user_response == "":
+        return verify_domain_tool(request)
+
+    username = "N/A"
+    if request.user.is_authenticated:
+        username = request.user.username
+
+    for entry in user_response:
+        new_record = User_Validation(task_id="DOMAIN_TOOL", user_id=username, main_keyword=main_keyword, domainnes_belongs_to_domain=user_response)
+        new_record.save()
+
+    return verify_domain_tool(request)
 
 
 def create_graph():
