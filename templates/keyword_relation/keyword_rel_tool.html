@@ -119,66 +119,7 @@
               Verify Domain Tool
             </a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="shopping-cart"></span>
-              Products
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="users"></span>
-              Customers
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="bar-chart-2"></span>
-              Reports
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="layers"></span>
-              Integrations
-            </a>
-          </li> -->
         </ul>
-
-        <!--
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-          <span>Saved reports</span>
-          <a class="link-secondary" href="#" aria-label="Add a new report">
-            <span data-feather="plus-circle"></span>
-          </a>
-        </h6>
-        <ul class="nav flex-column mb-2">
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Current month
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Last quarter
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Social engagement
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Year-end sale
-            </a>
-          </li>
-        </ul>
-        -->
       </div>
     </nav>
 
@@ -203,26 +144,6 @@
         <p id = "grab_match_4" hidden>{{ match_4 }}</p>
       </div>
 
-      
-
-      <div>
-        <!-- <form method="post" action="/add_entry/" style="padding-top: 5%;">
-          {% csrf_token %}
-          <div style="text-align: center; padding-bottom: 25px;display:inline">
-            <div style="float: left; margin-left: 25%">
-              <p style="font-size: 16px;"><strong>Do these words have a relationship?</strong></p>
-            </div>
-            <div>
-              <input type="radio" id="user_input_yes" name="user_input" value="Yes">
-                <label for="Yes">Yes</label><br>
-              <input type="radio" id="user_input_no" name="user_input" value="No">
-                <label for="No">No</label><br>
-            </div>
-
-            <input type="submit" class="btn btn-light" style="font-size: 30px;" id="actual_submit" value="Submit This Keyword"></input>
-          </div>
-        </form> -->
-      </div>
 
       <!-- <h3>Click on keywords for further information.</h3> -->
       <!-- <h3>More Information Below: </h3> -->
@@ -250,12 +171,12 @@
           <p>&#10;</p>
           <div style="display:inline; float:left;">
             <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_1" id="keyword_relation_radio_option_11">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_11">Related</label>
+              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_0" id="keyword_relation_radio_option_01" onclick="capture_user_selection(this)" value="Related">
+              <label class="custom-control-label-positive" for="keyword_relation_radio_option_0">Related</label>
             </div>
             <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_1" id="keyword_relation_radio_option_12">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_12">Not Related</label>
+              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_0" id="keyword_relation_radio_option_02" onclick="capture_user_selection(this)">
+              <label class="custom-control-label-negative" for="keyword_relation_radio_option_2">Not Related</label>
             </div>
           </div>
         </div>
@@ -264,12 +185,12 @@
         <p>&#10;</p>
           <div style="display:inline; float:left;">
             <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_2" id="keyword_relation_radio_option_21">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_21">Related</label>
+              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_1" id="keyword_relation_radio_option_11" onclick="capture_user_selection(this)" value="Related">
+              <label class="custom-control-label-positive" for="keyword_relation_radio_option_1">Related</label>
             </div>
             <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_2" id="keyword_relation_radio_option_22">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_22">Not Related</label>
+              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_1" id="keyword_relation_radio_option_12" onclick="capture_user_selection(this)">
+              <label class="custom-control-label-negative" for="keyword_relation_radio_option_1">Not Related</label>
             </div>
           </div>
       </div>
@@ -279,12 +200,12 @@
         <p>&#10;</p>
           <div style="display:inline; float:left;">
             <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_3" id="keyword_relation_radio_option_31">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_31">Related</label>
+              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_2" id="keyword_relation_radio_option_21" onclick="capture_user_selection(this)" value="Related">
+              <label class="custom-control-label-positive" for="keyword_relation_radio_option_2">Related</label>
             </div>
             <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_3" id="keyword_relation_radio_option_32">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_32">Not Related</label>
+              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_2" id="keyword_relation_radio_option_22" onclick="capture_user_selection(this)">
+              <label class="custom-control-label-negative" for="keyword_relation_radio_option_2">Not Related</label>
             </div>
           </div>
       </div>
@@ -294,12 +215,12 @@
         <p>&#10;</p>
           <div style="display:inline; float:left;">
             <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_4" id="keyword_relation_radio_option_41">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_41">Related</label>
+              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_3" id="keyword_relation_radio_option_31" onclick="capture_user_selection(this)" value="Related">
+              <label class="custom-control-label-positive" for="keyword_relation_radio_option_3">Related</label>
             </div>
             <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_4" id="keyword_relation_radio_option_42">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_42">Not Related</label>
+              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_3" id="keyword_relation_radio_option_32" onclick="capture_user_selection(this)">
+              <label class="custom-control-label-negative" for="keyword_relation_radio_option_3">Not Related</label>
             </div>
           </div>
       </div>
@@ -309,12 +230,12 @@
         <p>&#10;</p>
           <div>
             <div class="custom-control-positive custom-radio-positive" style="padding-left: 55px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_5" id="keyword_relation_radio_option_51">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_51">Related</label>
+              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_4" id="keyword_relation_radio_option_41" onclick="capture_user_selection(this)" value="Related">
+              <label class="custom-control-label-positive" for="keyword_relation_radio_option_4">Related</label>
             </div>
             <div class="custom-control-negative custom-radio-negative" style="padding-left: 55px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_5" id="keyword_relation_radio_option_52">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_52">Not Related</label>
+              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_4" id="keyword_relation_radio_option_42" onclick="capture_user_selection(this)">
+              <label class="custom-control-label-negative" for="keyword_relation_radio_option_4">Not Related</label>
             </div>
           </div>
       </div>
@@ -322,9 +243,36 @@
     </div>
 
   
-    <div style="padding-left: 700px;padding-top: 35px;">
+    <div style="padding-left: 40%;padding-top: 35px;">
       <p>&#10;</p>
-      <button type="button" class="btn btn-success"><a href="{% url 'verify_relationship_tool' %}" style="text-decoration: none; color:white">Submit</a></button>
+      <form method="post" action="/add_entry_rel_tool/" style="padding-top: 5%;">
+          {% csrf_token %}      
+
+          <!-- keyword_main -->
+          <input type="text" value="" id="input_keyword_main" name="input_keyword_main" hidden/>
+
+          <!-- keyword 0 -->
+          <input type="text" value="" id="input_keyword_0" name="input_keyword_0" hidden/>
+          <input type="text" value="" id="user_selection_0" name="user_selection_0" hidden/>
+
+          <!-- keyword 1 -->
+          <input type="text" value="" id="input_keyword_1" name="input_keyword_1" hidden/>
+          <input type="text" value="" id="user_selection_1" name="user_selection_1" hidden/>
+
+          <!-- keyword 2 -->
+          <input type="text" value="" id="input_keyword_2" name="input_keyword_2" hidden/>
+          <input type="text" value="" id="user_selection_2" name="user_selection_2" hidden/>
+
+          <!-- keyword 3 -->
+          <input type="text" value="" id="input_keyword_3" name="input_keyword_3" hidden/>
+          <input type="text" value="" id="user_selection_3" name="user_selection_3" hidden/>
+
+          <!-- keyword 4 -->
+          <input type="text" value="" id="input_keyword_4" name="input_keyword_4" hidden/>
+          <input type="text" value="" id="user_selection_4" name="user_selection_4" hidden/>
+
+          <input type="submit" class="btn btn-light" style="font-size: 30px; width: 200px;"></input>
+        </form>
     </div>
 
     <div>
@@ -546,8 +494,36 @@
         document.getElementById("model_data").innerHTML = html;
       }
 
+
+      function capture_user_selection(button) {
+        var id_val = button.id[30];
+        var radio_id = "keyword_relation_radio_".concat(id_val);
+        var match_id = "grab_match_".concat(id_val);
+        var input_key_id = "input_keyword_".concat(id_val);
+        var user_sel_id = "user_selection_".concat(id_val);
+
+
+        document.getElementById(input_key_id).value = document.getElementById(match_id).innerHTML;
+        var ele = document.getElementsByName(radio_id);
+        var check = "-1";
+
+        for (i = 0; i < ele.length; i++) { 
+          if(ele[i].checked) {
+            if (ele[i].value[0].localeCompare("R") == 0) {
+              check = "1";
+            } else {
+              check = "0";
+            }
+            break
+          }
+        } 
+
+        document.getElementById(user_sel_id).value = check
+      }
+
       window.onload = function() {
         info_selection("b0"); 
+        document.getElementById("input_keyword_main").value = document.getElementById("grab_keyword_main").innerHTML;
         // document.getElementById("keyword_fst_response").value = document.getElementById("grab_keyword_fst").innerHTML;
         // document.getElementById("keyword_snd_response").value = document.getElementById("grab_keyword_snd").innerHTML;
         // display_arxiv();

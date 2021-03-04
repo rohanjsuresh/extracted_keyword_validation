@@ -3,6 +3,7 @@ from .models import Keyword_Pages
 from .models import Pairs_In_Circulation
 from .models import Correct_Pairs
 from .models import Incorrect_Pairs
+from .models import User_Validation
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.conf.urls.static import static
 import os
@@ -123,23 +124,23 @@ def verify_relationship_tool(request):
     arxiv_info_arr = [arxiv_info_0, arxiv_info_1, arxiv_info_2, arxiv_info_3, arxiv_info_4]
 
     found = []
-    first_title = True
-    first_abstract = True
-    for i in range(50000):
-        idx = random.randint(0, len(titles)-1)
-        for i in range(len(matching)):
-            if matching[i] in titles[idx] and keyword_main in titles[idx]:
-                temp = arxiv_info_arr[i]
-                temp += titles[idx] + "|"
-                arxiv_info_arr[i] = temp
+    # first_title = True
+    # first_abstract = True
+    # for i in range(50000):
+    #     idx = random.randint(0, len(titles)-1)
+    #     for i in range(len(matching)):
+    #         if matching[i] in titles[idx] and keyword_main in titles[idx]:
+    #             temp = arxiv_info_arr[i]
+    #             temp += titles[idx] + "|"
+    #             arxiv_info_arr[i] = temp
 
-        for i in range(len(matching)):
-            if matching[i] in abstracts[idx] and keyword_main in abstracts[idx]:
-                temp = arxiv_info_arr[i]
-                for line in abstracts[idx].split("."):
-                    if matching[i] in line and keyword_main in line:
-                        temp += line + "|"
-                arxiv_info_arr[i] = temp
+    #     for i in range(len(matching)):
+    #         if matching[i] in abstracts[idx] and keyword_main in abstracts[idx]:
+    #             temp = arxiv_info_arr[i]
+    #             for line in abstracts[idx].split("."):
+    #                 if matching[i] in line and keyword_main in line:
+    #                     temp += line + "|"
+    #             arxiv_info_arr[i] = temp
 
     # print("FOUND: ", found)
 
@@ -257,6 +258,39 @@ def add_entry(request):
             update_record.times_classified += 1
             update_record.incorrect_match_count += 1
             update_record.save()
+
+    return verify_relationship_tool(request)
+
+def add_entry_rel_tool(request):
+
+    # get main keyword 
+    main_keyword = request.POST.get("input_keyword_main").lower()
+
+    # get user response
+    user_response = []
+
+    if request.POST.get("input_keyword_0").lower() != "":
+        user_response.append((request.POST.get("input_keyword_0").lower(),  int(request.POST.get("user_selection_0"))))
+
+    if request.POST.get("input_keyword_1").lower() != "":
+        user_response.append((request.POST.get("input_keyword_1").lower(),  int(request.POST.get("user_selection_1"))))
+
+    if request.POST.get("input_keyword_2").lower() != "":
+        user_response.append((request.POST.get("input_keyword_2").lower(),  int(request.POST.get("user_selection_2"))))
+
+    if request.POST.get("input_keyword_3").lower() != "":
+        user_response.append((request.POST.get("input_keyword_3").lower(),  int(request.POST.get("user_selection_3"))))
+
+    if request.POST.get("input_keyword_4").lower() != "":
+        user_response.append((request.POST.get("input_keyword_4").lower(),  int(request.POST.get("user_selection_4"))))
+
+    username = "N/A"
+    if request.user.is_authenticated:
+        username = request.user.username
+
+    for entry in user_response:
+        new_record = User_Validation(task_id="REL_TOOL", user_id=username, main_keyword=main_keyword, relationship_keyword=entry[0], relationship_is_related=entry[1])
+        new_record.save()
 
     return verify_relationship_tool(request)
 
