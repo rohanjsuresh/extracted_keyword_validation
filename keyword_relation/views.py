@@ -19,7 +19,13 @@ import matplotlib.pyplot as plt
 # Create your views here.
 
 def home(request):
-    return render(request, 'keyword_relation/index.html', {})
+    context = {}
+    if request.user.is_authenticated:
+        username = request.user.username
+        context["message"] = "You have classified " + str(len(User_Validation.objects.filter(user_id=username))) + " items."
+    else:
+        context["message"] = "Login/Register to use the tools!"
+    return render(request, 'keyword_relation/index.html', context)
 
 
 def keyword_pages(request):
@@ -295,17 +301,59 @@ def add_entry_rel_tool(request):
     return verify_relationship_tool(request)
 
 def dynamic_lookup_view(request, keyword):
-    obj = Keyword_Pages.objects.get(keyword=keyword)
     context = {
-        "keyword":obj.keyword.capitalize(),
-        "matched":obj.matched_with,
+        "keyword":keyword,
+        # "matched":obj.matched_with,
     }
+
+    print("LOOOK")
+
+    obj_rel = User_Validation.objects.filter(main_keyword=keyword, task_id="REL_TOOL")
+    obj_domain = User_Validation.objects.filter(main_keyword=keyword, task_id="DOMAIN_TOOL")
+
+    print(obj_rel)
+    print(obj_domain)
+
+    rel_map = {}
+    for val in obj_rel:
+        if val.relationship_keyword in rel_map.keys():
+            if val.relationship_is_related == 1:
+                temp = rel_map[val.relationship_keyword]
+                temp[0] += 1
+                rel_map[val.relationship_keyword] = temp
+            else:
+                temp = rel_map[val.relationship_keyword]
+                temp[1] += 1
+                rel_map[val.relationship_keyword] = temp
+        else:
+            if val.relationship_is_related == 1:
+                rel_map[val.relationship_keyword] = [1,0]
+            else:
+                rel_map[val.relationship_keyword] = [0, 1]
+
+    domain_count = [0,0]
+    for val in obj_domain:
+        if val.domainnes_belongs_to_domain == 1:
+            domain_count[0] += 1
+        else:
+            domain_count[1] += 1
+
+    context["domain_pos"] = domain_count[0]
+    context["domain_neg"] = domain_count[1]
+
+    matched_str = ""
+    for key in rel_map.keys():
+        matched_str += key
+        matched_str += "|" + str(rel_map[key][0])
+        matched_str += "|" + str(rel_map[key][1])
+        matched_str += ","
+    context["matched"] = matched_str
 
     # models
     model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
     model = Word2Vec.load(model_path)
 
-    related_fst = find_similar_keywords(model, obj.keyword.lower())
+    related_fst = find_similar_keywords(model, keyword)
 
     context["related_fst"] = related_fst
 
@@ -351,7 +399,7 @@ def dynamic_lookup_view(request, keyword):
         if found >= 5:
             break
 
-    print("FOUND: ", found)
+    # print("FOUND: ", found)
 
     context["title_str"] = title_str
     context["abstract_str"] = abstract_str

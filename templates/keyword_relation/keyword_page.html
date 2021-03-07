@@ -179,7 +179,27 @@
 
       <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
 
-      <h3>Other Users Have Matched This Keyword With:</h3>
+      <h3>Users Have Classified This Keyword Into The CS Domain</h3>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th># Belongs To CS</th>
+              <th># Does Not Belong to CS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{domain_pos}}</td>
+              <td>{{domain_neg}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p></p>
+
+      <h3>Users Have Matched This Keyword With:</h3>
       <div class="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
@@ -244,7 +264,7 @@
         var html = "";
 
         if (related_fst.length != 0) {
-          html = html.concat("<br><strong><h3>Words related to " + keyword_fst + "From Graph Embeddings</h3></strong>");
+          html = html.concat("<br><strong><h3>Words related to " + keyword_fst + " From Graph Embeddings</h3></strong>");
           var res = related_fst.split("|");
           html = html.concat("<ul>");
           for (var i = 0; i < res.length; i++) {

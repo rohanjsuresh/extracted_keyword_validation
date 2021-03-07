@@ -94,12 +94,16 @@ def find_similar_keywords(model, x):
     output = ""
     first = True
     try:
+        count = 0
         for node, _ in model.wv.most_similar(x):
             if first:
                 output += node
-                first = False
+                first = False 
             else:
                 output += "|" + node
+            count += 1
+            if count >=5:
+                break
     except:
         print(x, "not in graph")
         output="NA"
