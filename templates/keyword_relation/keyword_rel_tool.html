@@ -61,6 +61,10 @@
           background-color: #db0000;  /* red */
           /* border-radius: 50%; */
       }
+
+      .glow-button {
+        box-shadow: 0 20px 15px rgba(100, 101, 94, 0.4);
+      }
     </style>
 
     
@@ -167,85 +171,30 @@
 
       <div style="padding-left: 10%;padding-top: 15px;">
         <div style="display:inline; float:left;">
-          <button type="button" class="btn btn-primary" style="margin: 35px;" id="info_0" onclick="info_selection('b0')">{{ match_0 }}</button>
-          <p>&#10;</p>
-          <div style="display:inline; float:left;">
-            <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_0" id="keyword_relation_radio_option_01" onclick="capture_user_selection(this)" value="Related">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_0">Related</label>
-            </div>
-            <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_0" id="keyword_relation_radio_option_02" onclick="capture_user_selection(this)">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_2">Not Related</label>
-            </div>
-          </div>
+          <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_0" onmouseover="info_selection('b0')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_0 }}</button>
         </div>
       <div style="display:inline; float:left;">
-        <button type="button" class="btn btn-outline-primary" style="margin: 35px;" id="info_1" onclick="info_selection('b1')">{{ match_1 }}</button>
-        <p>&#10;</p>
-          <div style="display:inline; float:left;">
-            <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_1" id="keyword_relation_radio_option_11" onclick="capture_user_selection(this)" value="Related">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_1">Related</label>
-            </div>
-            <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_1" id="keyword_relation_radio_option_12" onclick="capture_user_selection(this)">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_1">Not Related</label>
-            </div>
-          </div>
+        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_1" onmouseover="info_selection('b1')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_1 }}</button>
       </div>
 
       <div style="display:inline; float:left;">
-        <button type="button" class="btn btn-outline-primary" style="margin: 35px;" id="info_2" onclick="info_selection('b2')">{{ match_2 }}</button>
-        <p>&#10;</p>
-          <div style="display:inline; float:left;">
-            <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_2" id="keyword_relation_radio_option_21" onclick="capture_user_selection(this)" value="Related">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_2">Related</label>
-            </div>
-            <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_2" id="keyword_relation_radio_option_22" onclick="capture_user_selection(this)">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_2">Not Related</label>
-            </div>
-          </div>
+        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_2" onmouseover="info_selection('b2')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_2 }}</button>
       </div>
 
       <div style="display:inline; float:left;">
-        <button type="button" class="btn btn-outline-primary" style="margin: 35px;" id="info_3" onclick="info_selection('b3')">{{ match_3 }}</button>
-        <p>&#10;</p>
-          <div style="display:inline; float:left;">
-            <div class="custom-control-positive custom-radio-positive" style="padding-left: 35px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_3" id="keyword_relation_radio_option_31" onclick="capture_user_selection(this)" value="Related">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_3">Related</label>
-            </div>
-            <div class="custom-control-negative custom-radio-negative" style="padding-left: 35px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_3" id="keyword_relation_radio_option_32" onclick="capture_user_selection(this)">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_3">Not Related</label>
-            </div>
-          </div>
+        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_3" onmouseover="info_selection('b3')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_3 }}</button>
       </div>
 
       <div>
-        <button type="button" class="btn btn-outline-primary" style="margin: 35px;" id="info_4" onclick="info_selection('b4')">{{ match_4 }}</button>
-        <p>&#10;</p>
-          <div>
-            <div class="custom-control-positive custom-radio-positive" style="padding-left: 55px;">
-              <input class="custom-control-input-positive" type="radio" name="keyword_relation_radio_4" id="keyword_relation_radio_option_41" onclick="capture_user_selection(this)" value="Related">
-              <label class="custom-control-label-positive" for="keyword_relation_radio_option_4">Related</label>
-            </div>
-            <div class="custom-control-negative custom-radio-negative" style="padding-left: 55px">
-              <input class="custom-control-input-negative" type="radio" name="keyword_relation_radio_4" id="keyword_relation_radio_option_42" onclick="capture_user_selection(this)">
-              <label class="custom-control-label-negative" for="keyword_relation_radio_option_4">Not Related</label>
-            </div>
-          </div>
+        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_4" onmouseover="info_selection('b4')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_4 }}</button>
       </div>
 
     </div>
 
   
-    <div style="padding-left: 40%;padding-top: 35px;">
+    <div style="padding-left: 40%;padding-top: 15px;">
       <p>&#10;</p>
-      <form method="post" action="/add_entry_rel_tool/" style="padding-top: 5%;">
+      <form method="post" action="/add_entry_rel_tool/">
           {% csrf_token %}      
 
           <!-- keyword_main -->
@@ -326,9 +275,9 @@
 
         for (var i = 0; i < 5; i++) {
           var temp_id =  "info_".concat(i.toString());
-          document.getElementById(temp_id).className = "btn btn-outline-primary";
+          document.getElementById(temp_id).classList.remove("glow-button");
         }
-        document.getElementById(curr_id).className = "btn btn-primary";
+        document.getElementById(curr_id).classList.add("glow-button");
 
         // set graph info
         set_graph_info(button);
@@ -495,39 +444,39 @@
       }
 
 
-      function capture_user_selection(button) {
-        var id_val = button.id[30];
+      function capture_user_selection_accept(button) {
+        var id_val = button.id[5];
         var radio_id = "keyword_relation_radio_".concat(id_val);
         var match_id = "grab_match_".concat(id_val);
         var input_key_id = "input_keyword_".concat(id_val);
         var user_sel_id = "user_selection_".concat(id_val);
 
+        button.className = "btn btn-success glow-button";
+
+        var check = "1";
 
         document.getElementById(input_key_id).value = document.getElementById(match_id).innerHTML;
-        var ele = document.getElementsByName(radio_id);
-        var check = "-1";
+        document.getElementById(user_sel_id).value = check;
+      }
 
-        for (i = 0; i < ele.length; i++) { 
-          if(ele[i].checked) {
-            if (ele[i].value[0].localeCompare("R") == 0) {
-              check = "1";
-            } else {
-              check = "0";
-            }
-            break
-          }
-        } 
+      function capture_user_selection_reject(button) {
+        var id_val = button.id[5];
+        var radio_id = "keyword_relation_radio_".concat(id_val);
+        var match_id = "grab_match_".concat(id_val);
+        var input_key_id = "input_keyword_".concat(id_val);
+        var user_sel_id = "user_selection_".concat(id_val);
 
-        document.getElementById(user_sel_id).value = check
+        button.className = "btn btn-danger glow-button";
+
+        var check = "0";
+
+        document.getElementById(input_key_id).value = document.getElementById(match_id).innerHTML;
+        document.getElementById(user_sel_id).value = check;
       }
 
       window.onload = function() {
         info_selection("b0"); 
         document.getElementById("input_keyword_main").value = document.getElementById("grab_keyword_main").innerHTML;
-        // document.getElementById("keyword_fst_response").value = document.getElementById("grab_keyword_fst").innerHTML;
-        // document.getElementById("keyword_snd_response").value = document.getElementById("grab_keyword_snd").innerHTML;
-        // display_arxiv();
-        // display_graph_rel();
       }
 
     </script>
