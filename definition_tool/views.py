@@ -11,19 +11,20 @@ import networkx as nx
 import random
 import matplotlib.pyplot as plt
 from django.apps import apps
+from .models import Definitions_In_Circulation
 
 Keyword_Pages = apps.get_model('keyword_relation', 'Keyword_Pages')
 User_Validation = apps.get_model('keyword_relation', 'User_Validation')
 
 # Create your views here.
 
-def verify_domain_tool(request):
+def verify_definition_tool(request):
     # get random row from relationship in circulation table
-    rand_obj = Keyword_Pages.objects.order_by('?').first()
+    rand_obj = Definitions_In_Circulation.objects.order_by('?').first()
 
     keyword_main = rand_obj.keyword
 
-    context = {"keyword_main":keyword_main}
+    context = {"keyword_main":keyword_main, "candidate_definition": rand_obj.candidate_definition}
 
     # read arxiv 
     titles_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_titles.npy')
@@ -72,21 +73,6 @@ def verify_domain_tool(request):
 
     print(related_main)
 
-    # G = create_graph()
-    # G = remove_hubs(G)
-    # shortest_paths_0 = get_n_shortest_paths(G, 5, keyword_main, matching[0])
-    # shortest_paths_1 = get_n_shortest_paths(G, 5, keyword_main, matching[1])
-    # shortest_paths_2 = get_n_shortest_paths(G, 5, keyword_main, matching[2])
-    # shortest_paths_3 = get_n_shortest_paths(G, 5, keyword_main, matching[3])
-    # shortest_paths_4 = get_n_shortest_paths(G, 5, keyword_main, matching[4])
-
-
-    # context["shortest_paths_0"] = shortest_paths_0
-    # context["shortest_paths_1"] = shortest_paths_1
-    # context["shortest_paths_2"] = shortest_paths_2
-    # context["shortest_paths_3"] = shortest_paths_3
-    # context["shortest_paths_4"] = shortest_paths_4
-
     print("Finding path for", keyword_main)
     wiki_path = wiki_main(keyword_main, "Computer Science")
     print(wiki_path)
@@ -94,7 +80,8 @@ def verify_domain_tool(request):
     context["wiki_path"] = wiki_path
 
 
-    return render(request, 'domainness_tool/domainness_tool.html', context)
+    return render(request, 'definition_tool/definition_tool.html', context)
+
 
 # function to get related keywords
 def find_similar_keywords(model, x):
@@ -117,10 +104,13 @@ def find_similar_keywords(model, x):
     return output
 
 
-def add_entry_domain_tool(request):
+def add_entry_definition_tool(request):
 
     # get main keyword 
     main_keyword = request.POST.get("input_keyword_main").lower()
+
+    # get candidate definition
+    candidate_definition = request.POST.get("input_definition").lower()
 
     # get user response
     user_response = request.POST.get("user_selection")
@@ -132,11 +122,13 @@ def add_entry_domain_tool(request):
     if request.user.is_authenticated:
         username = request.user.username
 
+    print("LOOOOK", candidate_definition)
+
     for entry in user_response:
-        new_record = User_Validation(task_id="DOMAIN_TOOL", user_id=username, main_keyword=main_keyword, domainness_belongs_to_domain=user_response)
+        new_record = User_Validation(task_id="DEFINITION_TOOL", user_id=username, main_keyword=main_keyword, definition_candidate_definition=candidate_definition, definition_is_def_valid=user_response)
         new_record.save()
 
-    return verify_domain_tool(request)
+    return verify_definition_tool(request)
 
 
 def create_graph():

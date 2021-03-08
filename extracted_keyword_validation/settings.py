@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'keyword_relation',
     'domainness_tool',
+    'definition_tool',
     'users',
     'crispy_forms',
 ]

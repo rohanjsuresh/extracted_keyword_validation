@@ -36,4 +36,7 @@ class User_Validation(models.Model):
     relationship_keyword = models.CharField(max_length=512)
     relationship_is_related = models.IntegerField(default=-1)
     # Columns for domainnes tool
-    domainnes_belongs_to_domain = models.IntegerField(default=-1)
+    domainness_belongs_to_domain = models.IntegerField(default=-1)
+    # Columns for definition tool
+    definition_is_def_valid = models.IntegerField(default=-1)
+    definition_candidate_definition = models.CharField(max_length=4096, default="N/A")
