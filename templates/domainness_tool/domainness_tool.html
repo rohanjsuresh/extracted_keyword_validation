@@ -133,19 +133,14 @@
         <p id = "grab_keyword_main" hidden>{{ keyword_main }}</p>
       </div>
 
-      <div style="padding-left: 400px">
-        <div class="form-check" style="padding-left: 20%;">
-            <input class="form-check-input" type="radio" name="keyword_relation_radio_5" id="keyword_relation_radio_option_51" onclick="capture_user_selection(this)" value="Belongs">
-            <label class="form-check-label" for="keyword_relation_radio_option_5">Yes</label>
+      <div style="padding-left: 35%;">
+        <div class="form-check">
+            <button type="button" class="btn btn-success" style="width: 200px" onclick="capture_user_selection_accept()">Yes</button>
         </div>
-        <div class="form-check" style="padding-left: 20%">
-            <input class="form-check-input" type="radio" name="keyword_relation_radio_5" id="keyword_relation_radio_option_52" onclick="capture_user_selection(this)">
-            <label class="form-check-label" for="keyword_relation_radio_option_5">No</label>
+        <div class="form-check">
+            <button type="button" class="btn btn-danger" style="width: 200px" onclick="capture_user_selection_reject()">No</button>
         </div>
       </div>
-
-      <!-- <h3>Click on keywords for further information.</h3> -->
-      <!-- <h3>More Information Below: </h3> -->
 
       <div id="model_data">
 
@@ -162,8 +157,8 @@
     </div>
 
   
-    <div style="padding-left: 35%;padding-top: 15px;">
-      <form method="post" action="/domainness_tool/add_entry_domain_tool/" style="padding-top: 5%;">
+    <div>
+      <form method="post" action="/domainness_tool/add_entry_domain_tool/">
         {% csrf_token %}      
 
         <!-- keyword_main -->
@@ -172,7 +167,7 @@
         <!-- belongs to domain -->
         <input type="text" value="" id="user_selection" name="user_selection" hidden/>
 
-        <input type="submit" class="btn btn-light" style="font-size: 30px; width: 200px;"></input>
+        <input type="submit" class="btn btn-light" style="font-size: 30px; width: 200px;" id="real_submit" hidden></input>
       </form>
     </div>
 
@@ -194,17 +189,6 @@
         
       </div>
     </div>
-      <!-- <ul>
-        <li><strong>Title:</strong> Lorem ipsum dolor sit amet</li>
-        <li><strong>Abstract:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-      </ul>
-
-      <ul>
-        <li><strong>Title:</strong> Lorem ipsum dolor sit amet</li>
-        <li><strong>Abstract:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-      </ul> -->
-
-
 
       <p id="grab_related_graph_main" hidden>{{ related_graph_main }}</p>
       <p id="grab_arxiv_info" hidden>{{ arxiv_info }}</p>
@@ -218,6 +202,8 @@
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="{% static 'dashboard.js' %}"></script>
     <script>
+
+
 
       function info_selection() {
 
@@ -378,34 +364,19 @@
         document.getElementById("model_data").innerHTML = html;
       }
 
-      function capture_user_selection(button) {
-        var id_val = button.id[30];
-        var radio_id = "keyword_relation_radio_".concat(id_val);
+      function capture_user_selection_accept() {
+        document.getElementById("user_selection").value = "1";
+        document.getElementById("real_submit").click();
+      }
 
-        var ele = document.getElementsByName(radio_id);
-        var check = "-1";
-
-        for (i = 0; i < ele.length; i++) { 
-          if(ele[i].checked) {
-            if (ele[i].value[0].localeCompare("B") == 0) {
-              check = "1";
-            } else {
-              check = "0";
-            }
-            break
-          }
-        } 
-
-        document.getElementById("user_selection").value = check
+      function capture_user_selection_reject() {
+        document.getElementById("user_selection").value = "0";
+        document.getElementById("real_submit").click();
       }
 
       window.onload = function() {
         info_selection("b0"); 
         document.getElementById("input_keyword_main").value = document.getElementById("grab_keyword_main").innerHTML;
-        // document.getElementById("keyword_fst_response").value = document.getElementById("grab_keyword_fst").innerHTML;
-        // document.getElementById("keyword_snd_response").value = document.getElementById("grab_keyword_snd").innerHTML;
-        // display_arxiv();
-        // display_graph_rel();
       }
 
     </script>
