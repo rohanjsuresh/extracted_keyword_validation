@@ -69,7 +69,7 @@
   </head>
   <body>
     
-<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+<!-- <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Keyword Data Tools</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -87,66 +87,35 @@
       {% endif %}
     </li>
   </ul>
-</header>
+</header> -->
 
 <div class="container-fluid">
   <div class="row">
-
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-      <div class="position-sticky pt-3">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="{% url 'home' %}">
-              <span data-feather="home"></span>
-              Home
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'keyword_pages' %}">
-              <span data-feather="file"></span>
-              Keyword Pages
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'verify_relationship_tool' %}">
-              <span data-feather="user-check"></span>
-              Verify Keyword Relationship Tool
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'verify_domain_tool' %}">
-              <span data-feather="user-check"></span>
-              Verify Domain Tool
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="{% url 'verify_definition_tool' %}">
-              <span data-feather="user-check"></span>
-              Verify Definition Tool
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main>
       <!-- <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         
       </div> -->
       <div style="padding-bottom: 25px;padding-top: 15px;">
-        <h3 style="display: inline-block;margin: 10px;">Is the definition below appropriate for the following keyword:</h3>
-        <button type="button" class="btn btn-primary">{{ keyword_main }}</button>
-        <h4 style="margin: 10px;">"{{ candidate_definition }}"</h4>
+        <h3 style="display: inline-block;margin: 10px;">Domain relevance:   </h3>
         <p id = "grab_keyword_main" hidden>{{ keyword_main }}</p>
-        <p id = "grab_definition" hidden>{{ candidate_definition }}</p>
       </div>
 
-      <div style="padding-left: 35%;">
-        <div class="form-check">
-            <button type="button" class="btn btn-success" style="width: 200px" onclick="capture_user_selection_accept()">Yes</button>
-        </div>
-        <div class="form-check">
-            <button type="button" class="btn btn-danger" style="width: 200px" onclick="capture_user_selection_reject()">No</button>
+      <div class="container">
+        <div class="row">
+
+          <div class="col" style="margin-left: 10%; margin-top: 15px;">
+            <button type="button" class="btn btn-primary" style="font-size: 20px; border-radius: 10px;">{{ keyword_main }}</button>
+          </div>
+
+          <div class="col" style="margin-right: 40%;">
+            <div class="form-check">
+                <button type="button" class="btn btn-success" style="width: 200px" onclick="capture_user_selection_accept()">Yes</button>
+            </div>
+            <div class="form-check">
+                <button type="button" class="btn btn-danger" style="width: 200px" onclick="capture_user_selection_reject()">No</button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -166,12 +135,11 @@
 
   
     <div>
-      <form method="post" action="/definition_tool/add_entry_definition_tool/">
+      <form method="post" action="/domainness_tool/add_entry_domain_tool/">
         {% csrf_token %}      
 
         <!-- keyword_main -->
         <input type="text" value="" id="input_keyword_main" name="input_keyword_main" hidden/>
-        <input type="text" value="" id="input_definition" name="input_definition" hidden/>
 
         <!-- belongs to domain -->
         <input type="text" value="" id="user_selection" name="user_selection" hidden/>
@@ -386,7 +354,6 @@
       window.onload = function() {
         info_selection("b0"); 
         document.getElementById("input_keyword_main").value = document.getElementById("grab_keyword_main").innerHTML;
-        document.getElementById("input_definition").value = document.getElementById("grab_definition").innerHTML;
       }
 
     </script>

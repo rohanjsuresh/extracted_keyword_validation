@@ -27,7 +27,6 @@ def home(request):
         context["message"] = "Login/Register to use the tools!"
     return render(request, 'keyword_relation/index.html', context)
 
-
 def keyword_pages(request):
     #render spreadsheet
     all_keywords = Keyword_Pages.objects.all()
@@ -217,6 +216,137 @@ def verify_relationship_tool(request):
     return render(request, 'keyword_relation/keyword_rel_tool.html', context)
 
 
+def verify_relationship_tool_iframe(request, keyword):
+    # get random row from relationship in circulation table
+    rand_obj = Keyword_Pages.objects.get(keyword=keyword)
+
+    keyword_main = rand_obj.keyword
+
+    used_keywords = set()
+
+    found = 0
+    matching = []
+    while found < 5:
+        rand_obj = Keyword_Pages.objects.order_by('?').first()
+        keyword = rand_obj.keyword
+        if keyword not in matching and keyword != keyword_main:
+            matching.append(keyword)
+            found += 1
+
+    print(keyword_main)
+    print(matching)
+
+    context = {"keyword_main":keyword_main, "match_0":matching[0], "match_1":matching[1], "match_2":matching[2], "match_3":matching[3], "match_4":matching[4]}
+
+    title_str = ""
+    abstract_str = ""
+    linked_title = ""
+
+    # read arxiv 
+    titles_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_titles.npy')
+    abstracts_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_abstracts.npy')
+
+    titles = np.load(titles_path, mmap_mode='r')
+    abstracts = np.load(abstracts_path, mmap_mode='r')
+
+    print("loaded")
+
+    arxiv_info_0 = ""
+    arxiv_info_1 = ""
+    arxiv_info_2 = ""
+    arxiv_info_3 = ""
+    arxiv_info_4 = ""
+
+    arxiv_info_arr = [arxiv_info_0, arxiv_info_1, arxiv_info_2, arxiv_info_3, arxiv_info_4]
+    arxiv_info_num_found = [0, 0, 0, 0, 0]
+    total_found = 0
+
+    found = []
+    first_title = True
+    first_abstract = True
+    for j in range(50000):
+        idx = random.randint(0, len(titles)-1)
+        for i in range(len(matching)):
+            if arxiv_info_num_found[i] < 10:
+                if matching[i] in titles[idx] and keyword_main in titles[idx]:
+                    temp = arxiv_info_arr[i]
+                    temp += titles[idx] + "|"
+                    arxiv_info_arr[i] = temp
+                    arxiv_info_num_found[i] += 1
+                    total_found += 1
+                    if arxiv_info_num_found[i] >= 10:
+                        break
+        
+        if total_found >= 50:
+            break
+
+        for i in range(len(matching)):
+            if arxiv_info_num_found[i] < 10:
+                if matching[i] in abstracts[idx] and keyword_main in abstracts[idx]:
+                    temp = arxiv_info_arr[i]
+                    for line in abstracts[idx].split("."):
+                        if matching[i] in line and keyword_main in line:
+                            temp += line + "|"
+                            arxiv_info_num_found[i] += 1
+                            if arxiv_info_num_found[i] >= 10:
+                                break
+                    arxiv_info_arr[i] = temp
+
+        if total_found >= 50:
+            break
+
+
+    print("FOUND: ", found)
+
+    for i in range(len(arxiv_info_arr)):
+        if arxiv_info_arr[i] == "":
+            arxiv_info_arr[i] = "NA"
+
+    context["arxiv_info_0"] = arxiv_info_arr[0]
+    context["arxiv_info_1"] = arxiv_info_arr[1]
+    context["arxiv_info_2"] = arxiv_info_arr[2]
+    context["arxiv_info_3"] = arxiv_info_arr[3]
+    context["arxiv_info_4"] = arxiv_info_arr[4]
+
+    print(arxiv_info_arr[0])
+    print(arxiv_info_arr[1])
+    print(arxiv_info_arr[2])
+    print(arxiv_info_arr[3])
+    print(arxiv_info_arr[4])
+
+
+    # # models
+    # model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
+    # model = Word2Vec.load(model_path)
+
+    # related_fst = find_similar_keywords(model, keyword_fst)
+    # related_snd = find_similar_keywords(model, keyword_snd)
+
+    # context["related_fst"] = related_fst
+    # context["related_snd"] = related_snd
+
+    # print(related_fst)
+    # print(related_snd)
+
+    G = create_graph()
+    G = remove_hubs(G)
+    shortest_paths_0 = get_n_shortest_paths(G, 5, keyword_main, matching[0])
+    shortest_paths_1 = get_n_shortest_paths(G, 5, keyword_main, matching[1])
+    shortest_paths_2 = get_n_shortest_paths(G, 5, keyword_main, matching[2])
+    shortest_paths_3 = get_n_shortest_paths(G, 5, keyword_main, matching[3])
+    shortest_paths_4 = get_n_shortest_paths(G, 5, keyword_main, matching[4])
+
+
+    context["shortest_paths_0"] = shortest_paths_0
+    context["shortest_paths_1"] = shortest_paths_1
+    context["shortest_paths_2"] = shortest_paths_2
+    context["shortest_paths_3"] = shortest_paths_3
+    context["shortest_paths_4"] = shortest_paths_4
+
+
+    return render(request, 'keyword_relation/keyword_rel_tool_iframe.html', context)
+
+
 # function to get related keywords
 def find_similar_keywords(model, x):
     output = ""
@@ -351,7 +481,7 @@ def dynamic_lookup_view(request, keyword):
 
     domain_count = [0,0]
     for val in obj_domain:
-        if val.domainnes_belongs_to_domain == 1:
+        if val.domainness_belongs_to_domain == 1:
             domain_count[0] += 1
         else:
             domain_count[1] += 1

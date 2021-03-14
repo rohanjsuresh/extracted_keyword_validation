@@ -96,6 +96,87 @@ def verify_domain_tool(request):
 
     return render(request, 'domainness_tool/domainness_tool.html', context)
 
+
+
+def verify_domain_tool_iframe(request, keyword):
+    # get keyword, not random
+    rand_obj = Keyword_Pages.objects.get(keyword=keyword)
+
+    keyword_main = rand_obj.keyword
+
+    context = {"keyword_main":keyword_main}
+
+    # read arxiv 
+    titles_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_titles.npy')
+    abstracts_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_abstracts.npy')
+
+    titles = np.load(titles_path, mmap_mode='r')
+    abstracts = np.load(abstracts_path, mmap_mode='r')
+
+    print("loaded")
+
+    arxiv_info = ""
+
+    count = 0
+    for i in range(5000):
+        idx = random.randint(0, len(titles)-1)
+        if keyword_main in titles[idx]:
+            arxiv_info += titles[idx] + "|"
+            count +=1
+            if count >= 5:
+                break
+
+        if keyword_main in abstracts[idx]:
+            for line in abstracts[idx].split("."):
+                if keyword_main in line:
+                    arxiv_info += line + "|"
+                    count +=1
+                    if count >= 5:
+                        break
+
+
+    if arxiv_info == "":
+        arxiv_info = "NA"
+
+    context["arxiv_info"] = arxiv_info
+
+    print(arxiv_info)
+
+
+    # models
+    model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
+    model = Word2Vec.load(model_path)
+
+    related_main = find_similar_keywords(model, keyword_main)
+
+    context["related_graph_main"] = related_main
+
+    print(related_main)
+
+    # G = create_graph()
+    # G = remove_hubs(G)
+    # shortest_paths_0 = get_n_shortest_paths(G, 5, keyword_main, matching[0])
+    # shortest_paths_1 = get_n_shortest_paths(G, 5, keyword_main, matching[1])
+    # shortest_paths_2 = get_n_shortest_paths(G, 5, keyword_main, matching[2])
+    # shortest_paths_3 = get_n_shortest_paths(G, 5, keyword_main, matching[3])
+    # shortest_paths_4 = get_n_shortest_paths(G, 5, keyword_main, matching[4])
+
+
+    # context["shortest_paths_0"] = shortest_paths_0
+    # context["shortest_paths_1"] = shortest_paths_1
+    # context["shortest_paths_2"] = shortest_paths_2
+    # context["shortest_paths_3"] = shortest_paths_3
+    # context["shortest_paths_4"] = shortest_paths_4
+
+    print("Finding path for", keyword_main)
+    wiki_path = wiki_main(keyword_main, "Computer Science")
+    print(wiki_path)
+
+    context["wiki_path"] = wiki_path
+
+
+    return render(request, 'domainness_tool/domainness_tool_iframe.html', context)
+
 # function to get related keywords
 def find_similar_keywords(model, x):
     output = ""

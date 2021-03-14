@@ -114,7 +114,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active">
+            <a class="nav-link active" href="{% url 'verify_domain_tool' %}">
               <span data-feather="user-check"></span>
               Verify Domain Tool
             </a>
@@ -134,17 +134,26 @@
         
       </div> -->
       <div style="padding-bottom: 25px;padding-top: 15px;">
-        <h3 style="display: inline-block;margin: 10px;">Does this keyword belong to the <strong>Computer Science</strong> domain:   </h3>
-        <button type="button" class="btn btn-primary">{{ keyword_main }}</button>
+        <h3 style="display: inline-block;margin: 10px;">Domain relevance:   </h3>
         <p id = "grab_keyword_main" hidden>{{ keyword_main }}</p>
       </div>
 
-      <div style="padding-left: 35%;">
-        <div class="form-check">
-            <button type="button" class="btn btn-success" style="width: 200px" onclick="capture_user_selection_accept()">Yes</button>
-        </div>
-        <div class="form-check">
-            <button type="button" class="btn btn-danger" style="width: 200px" onclick="capture_user_selection_reject()">No</button>
+      <div class="container">
+        <div class="row">
+
+          <div class="col" style="margin-left: 10%; margin-top: 15px;">
+            <button type="button" class="btn btn-primary" style="font-size: 20px; border-radius: 10px;">{{ keyword_main }}</button>
+          </div>
+
+          <div class="col" style="margin-right: 40%;">
+            <div class="form-check">
+                <button type="button" class="btn btn-success" style="width: 200px" onclick="capture_user_selection_accept()">Yes</button>
+            </div>
+            <div class="form-check">
+                <button type="button" class="btn btn-danger" style="width: 200px" onclick="capture_user_selection_reject()">No</button>
+            </div>
+          </div>
+
         </div>
       </div>
 
