@@ -352,6 +352,12 @@ def find_similar_keyword_default(request):
     return render(request, 'keyword_relation/find_similar_keyword_default.html', {})
 
 def find_similar_keywords_result(request, features):
+
+    l_userinput = request.POST.getlist("l")[0]
+    p_userinput = request.POST.getlist("p")[0]
+    sub_userinput = request.POST.getlist("sub")[0]
+    s_userinput = request.POST.getlist("s")[0]
+
     dic = {}
 
     for i in features:
@@ -373,19 +379,19 @@ def find_similar_keywords_result(request, features):
         for k,v in dic.items():
             if k == 'l':
                 lflag = True
-                if length[i] == int(v):
+                if length[i] == int(l_userinput):
                     length_list.append(keyword)
             if k == 'p':
                 pflag = True
-                if pos[i] == v:
+                if pos[i] == p_userinput:
                     pos_list.append(keyword)
             if k == 'sub':
                 subflag = True
-                if v in keyword:
+                if sub_userinput in keyword:
                     substring_list.append(keyword)
             if k == 's':
                 sflag = True
-                if float(v) < float(score[i]):
+                if float(s_userinput) < float(score[i]):
                     score_list.append(keyword)
 
     to_return = []
