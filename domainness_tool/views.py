@@ -11,9 +11,21 @@ import networkx as nx
 import random
 import matplotlib.pyplot as plt
 from django.apps import apps
+import wikipediaapi
+
+wiki_wiki = wikipediaapi.Wikipedia('en')
 
 Keyword_Pages = apps.get_model('keyword_relation', 'Keyword_Pages')
 User_Validation = apps.get_model('keyword_relation', 'User_Validation')
+
+# read arxiv 
+titles_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_titles.npy')
+abstracts_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_abstracts.npy')
+
+titles = np.load(titles_path, mmap_mode='r')
+abstracts = np.load(abstracts_path, mmap_mode='r')
+
+print("loaded")
 
 # Create your views here.
 
@@ -25,14 +37,14 @@ def verify_domain_tool(request):
 
     context = {"keyword_main":keyword_main}
 
-    # read arxiv 
-    titles_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_titles.npy')
-    abstracts_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_abstracts.npy')
+    # # read arxiv 
+    # titles_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_titles.npy')
+    # abstracts_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_abstracts.npy')
 
-    titles = np.load(titles_path, mmap_mode='r')
-    abstracts = np.load(abstracts_path, mmap_mode='r')
+    # titles = np.load(titles_path, mmap_mode='r')
+    # abstracts = np.load(abstracts_path, mmap_mode='r')
 
-    print("loaded")
+    # print("loaded")
 
     arxiv_info = ""
 
@@ -44,6 +56,8 @@ def verify_domain_tool(request):
             count +=1
             if count >= 5:
                 break
+        if count >= 5:
+            break
 
         if keyword_main in abstracts[idx]:
             for line in abstracts[idx].split("."):
@@ -52,7 +66,8 @@ def verify_domain_tool(request):
                     count +=1
                     if count >= 5:
                         break
-
+        if count >= 5:
+            break
 
     if arxiv_info == "":
         arxiv_info = "NA"
@@ -88,10 +103,26 @@ def verify_domain_tool(request):
     # context["shortest_paths_4"] = shortest_paths_4
 
     print("Finding path for", keyword_main)
-    wiki_path = wiki_main(keyword_main, "Computer Science")
-    print(wiki_path)
+    # wiki_path = wiki_main(keyword_main, "Computer Science")
+    visited = set()
+    wiki_paths = wiki_bfs(keyword_main, "Glossary of computer science", visited, 0, [], 100)
+    wiki_path = get_probability_score(wiki_paths)
 
-    context["wiki_path"] = wiki_path
+
+    if wiki_path == "N/A":
+        wiki_path_str = wiki_path
+    else:
+        first = True
+        wiki_path_str = ""
+        for val in wiki_path:
+            if first:
+                wiki_path_str += val
+                first = False
+            else:
+                wiki_path_str += " --> " + val
+
+    
+    context["wiki_path"] = wiki_path_str
 
 
     return render(request, 'domainness_tool/domainness_tool.html', context)
@@ -106,15 +137,6 @@ def verify_domain_tool_iframe(request, keyword):
 
     context = {"keyword_main":keyword_main}
 
-    # read arxiv 
-    titles_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_titles.npy')
-    abstracts_path = os.path.join(settings.STATIC_ROOT,'../arxiv_data/arxiv_abstracts.npy')
-
-    titles = np.load(titles_path, mmap_mode='r')
-    abstracts = np.load(abstracts_path, mmap_mode='r')
-
-    print("loaded")
-
     arxiv_info = ""
 
     count = 0
@@ -125,6 +147,8 @@ def verify_domain_tool_iframe(request, keyword):
             count +=1
             if count >= 5:
                 break
+        if count >= 5:
+            break
 
         if keyword_main in abstracts[idx]:
             for line in abstracts[idx].split("."):
@@ -133,6 +157,8 @@ def verify_domain_tool_iframe(request, keyword):
                     count +=1
                     if count >= 5:
                         break
+        if count >= 5:
+            break
 
 
     if arxiv_info == "":
@@ -169,10 +195,27 @@ def verify_domain_tool_iframe(request, keyword):
     # context["shortest_paths_4"] = shortest_paths_4
 
     print("Finding path for", keyword_main)
-    wiki_path = wiki_main(keyword_main, "Computer Science")
+    # wiki_path = wiki_main(keyword_main, "Computer Science")
+    visited = set()
+    wiki_paths = wiki_bfs(keyword_main, "Glossary of computer science", visited, 0, [], 100)
+    wiki_path = get_probability_score(wiki_paths)
+
+
+    if wiki_path == "N/A":
+        wiki_path_str = wiki_path
+    else:
+        first = True
+        wiki_path_str = ""
+        for val in wiki_path:
+            if first:
+                wiki_path_str += val
+                first = False
+            else:
+                wiki_path_str += " --> " + val
+
     print(wiki_path)
 
-    context["wiki_path"] = wiki_path
+    context["wiki_path"] = wiki_path_str
 
 
     return render(request, 'domainness_tool/domainness_tool_iframe.html', context)
@@ -530,3 +573,72 @@ def wiki_main(word1, word2):
             return "No link found."
     except IndexError:
         return "Usage: python closestpath.py [first_url] [second_url]"
+
+
+def wiki_bfs(source, target, visited, num_found, found_paths, iter_limit):
+    queue = []
+    visited.add(source)
+    queue.append([source])
+    iter_count = 0
+    output = []
+    while len(queue) > 0 and iter_count <= iter_limit:
+        iter_count += 1
+        path_attempt = queue.pop(0)
+        v = path_attempt[-1]
+        if v == target.lower():
+            if path_attempt not in output:
+                output.append(path_attempt)
+#                 print(output)
+#                 for val in path_attempt:
+#                     try:
+#                         visited.remove(val)
+#                     except:
+#                         pass
+                visited.remove(target.lower())
+                iter_count = 0
+            if len(output) == 3:
+                print("hit")
+                return output
+        try:
+            v = wiki_wiki.page(v)
+        except:
+            continue
+        edges = [x.lower() for x in v.links]
+        index_push = 0
+        for edge in edges:
+            if (edge in target.lower() or target.lower() in edge) and edge not in visited:
+                visited.add(edge)
+                new_path_attempt = path_attempt[:]
+                new_path_attempt.append(edge)
+                if edge == target.lower():
+                    queue.insert(0, new_path_attempt)
+                    index_push += 1
+                queue.insert(index_push, new_path_attempt)
+#                 print(queue)
+        
+        for edge in edges:
+            if edge not in visited:
+                visited.add(edge)
+                new_path_attempt = path_attempt[:]
+                new_path_attempt.append(edge)
+                queue.append(new_path_attempt)
+    # print("out", iter_count)
+    # print(len(queue))
+    return output
+
+
+def get_probability_score(path):
+
+    if path == []:
+        return "N/A"
+
+    all_probs = []
+    for i in range(len(path)):
+        probabilities_path = []
+        for val in path[i]:
+            probabilities = 1/(len(wiki_wiki.page(val).links))
+            probabilities_path.append(probabilities)
+        all_probs.append((sum(probabilities_path), path[i]))
+
+    all_probs.sort(key = lambda x: x[0])  
+    return all_probs[0][1]

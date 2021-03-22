@@ -57,6 +57,11 @@ def keyword_pages(request):
                 wikipedia_content_str += wikipedia.summary(s, sentences=1)
             else: 
                 wikipedia_content_str += "|" + wikipedia.summary(s, sentences=1)
+        except:
+            if first:
+                wikipedia_content_str += "N/A"
+            else: 
+                wikipedia_content_str += "| N/A"
 
         # except wikipedia.exceptions.PageError:
         #     print(keywords.keyword)
@@ -64,8 +69,8 @@ def keyword_pages(request):
         #         wikipedia_content_str += wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
         #     else: 
         #         wikipedia_content_str += "|" + wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
-        except:
-            wikipedia_content_str += "| N/A"
+        # except:
+        #     wikipedia_content_str += "| N/A"
 
 
         if first:
