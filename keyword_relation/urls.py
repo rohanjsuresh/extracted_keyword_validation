@@ -10,17 +10,10 @@ urlpatterns = [
     path('keyword_pages/<str:keyword>', views.dynamic_lookup_view, name='dynamic_lookup_view'),
     path('keyword_pages', views.keyword_pages, name='keyword_pages'),
     path('verify_relationship_tool', views.verify_relationship_tool, name='verify_relationship_tool'),
-<<<<<<< HEAD
-    path('find_similar_keyword_default', views.find_similar_keyword_default, name='find_similar_keyword_default'),
+    # path('find_similar_keyword_default', views.find_similar_keyword_default, name='find_similar_keyword_default'),
     path(r'search/', views.search, name='search'),
     path(r'search_similar/', views.search_similar, name='search_similar'),
     path(r'search_similar_result/', views.search_similar_result, name='search_similar_result'),
     path(r'add_entry/', views.add_entry, name='add_entry'),
-=======
-    # path('verify_relationship_tool_iframe/', TemplateView.as_view(template_name="keyword_relation/keyword_rel_tool.html"),
-    #                name='verify_relationship_tool_iframe'),
-    path(r'search/', views.search, name='search'),
-    # path(r'add_entry/', views.add_entry, name='add_entry'),
     path(r'add_entry_rel_tool/', views.add_entry_rel_tool, name='add_entry_rel_tool'),
->>>>>>> d2780cd31dedce61bcde585bb481bda9c010b034
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

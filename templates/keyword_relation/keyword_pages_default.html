@@ -86,6 +86,12 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="#">
+              <span data-feather="user-check"></span>
+              Find Similar Keyword Tool
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'verify_relationship_tool' %}">
               <span data-feather="user-check"></span>
               Verify Keyword Relationship Tool
@@ -175,7 +181,7 @@
         url = url.concat("/domainness_tool/verify_domain_tool/");
         url = url.concat(keyword.replace(" ", "%20"));
 
-        var html = "<iframe id=\"encoder_iframe\" height=\"100%\" width=\"100%\" src=\"";
+        var html = "<iframe id=\"encoder_iframe\" height=\"100%\" width=\"80%\" src=\"";
         html = html.concat(url);
         html = html.concat("\"></iframe>");
 

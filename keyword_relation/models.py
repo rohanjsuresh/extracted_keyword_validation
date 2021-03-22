@@ -26,6 +26,9 @@ class Incorrect_Pairs(models.Model):
 class Keyword_Pages(models.Model):
     keyword = models.CharField(max_length=512)
     matched_with = models.CharField(max_length=2048)
+    wiki_definition = models.CharField(max_length=4096, default="")
+    google_graph_embedding = models.CharField(max_length=4096, default="")
+    wiki_path = models.CharField(max_length=2048, default="")
 
 class User_Validation(models.Model):
     task_id = models.CharField(max_length=512)

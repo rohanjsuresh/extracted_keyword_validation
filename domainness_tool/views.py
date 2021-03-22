@@ -78,14 +78,18 @@ def verify_domain_tool(request):
 
 
     # models
-    model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
-    model = Word2Vec.load(model_path)
+    if rand_obj.google_graph_embedding != "":
+        related_main = rand_obj.google_graph_embedding
+    else:
+        model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
+        model = Word2Vec.load(model_path)
 
-    related_main = find_similar_keywords(model, keyword_main)
+        related_main = find_similar_keywords(model, keyword_main)
+
+        rand_obj.google_graph_embedding = related_main
+        rand_obj.save()
 
     context["related_graph_main"] = related_main
-
-    print(related_main)
 
     # G = create_graph()
     # G = remove_hubs(G)
@@ -102,26 +106,33 @@ def verify_domain_tool(request):
     # context["shortest_paths_3"] = shortest_paths_3
     # context["shortest_paths_4"] = shortest_paths_4
 
-    print("Finding path for", keyword_main)
-    # wiki_path = wiki_main(keyword_main, "Computer Science")
-    visited = set()
-    wiki_paths = wiki_bfs(keyword_main, "Glossary of computer science", visited, 0, [], 100)
-    wiki_path = get_probability_score(wiki_paths)
-
-
-    if wiki_path == "N/A":
-        wiki_path_str = wiki_path
+    if rand_obj.wiki_path != "":
+        wiki_path_str = rand_obj.wiki_path
     else:
-        first = True
-        wiki_path_str = ""
-        for val in wiki_path:
-            if first:
-                wiki_path_str += val
-                first = False
-            else:
-                wiki_path_str += " --> " + val
+        print("Finding path for", keyword_main)
+        # wiki_path = wiki_main(keyword_main, "Computer Science")
+        visited = set()
+        wiki_paths = wiki_bfs(keyword_main, "Glossary of computer science", visited, 0, [], 100)
+        wiki_path = get_probability_score(wiki_paths)
 
-    
+
+        if wiki_path == "N/A":
+            wiki_path_str = wiki_path
+        else:
+            first = True
+            wiki_path_str = ""
+            for val in wiki_path:
+                if first:
+                    wiki_path_str += val
+                    first = False
+                else:
+                    wiki_path_str += " --> " + val
+
+            rand_obj.wiki_path = wiki_path_str
+            rand_obj.save()
+
+        print(wiki_path)
+
     context["wiki_path"] = wiki_path_str
 
 
@@ -170,14 +181,18 @@ def verify_domain_tool_iframe(request, keyword):
 
 
     # models
-    model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
-    model = Word2Vec.load(model_path)
+    if rand_obj.google_graph_embedding != "":
+        related_main = rand_obj.google_graph_embedding
+    else:
+        model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
+        model = Word2Vec.load(model_path)
 
-    related_main = find_similar_keywords(model, keyword_main)
+        related_main = find_similar_keywords(model, keyword_main)
+
+        rand_obj.google_graph_embedding = related_main
+        rand_obj.save()
 
     context["related_graph_main"] = related_main
-
-    print(related_main)
 
     # G = create_graph()
     # G = remove_hubs(G)
@@ -194,26 +209,32 @@ def verify_domain_tool_iframe(request, keyword):
     # context["shortest_paths_3"] = shortest_paths_3
     # context["shortest_paths_4"] = shortest_paths_4
 
-    print("Finding path for", keyword_main)
-    # wiki_path = wiki_main(keyword_main, "Computer Science")
-    visited = set()
-    wiki_paths = wiki_bfs(keyword_main, "Glossary of computer science", visited, 0, [], 100)
-    wiki_path = get_probability_score(wiki_paths)
-
-
-    if wiki_path == "N/A":
-        wiki_path_str = wiki_path
+    if rand_obj.wiki_path != "":
+        wiki_path_str = rand_obj.wiki_path
     else:
-        first = True
-        wiki_path_str = ""
-        for val in wiki_path:
-            if first:
-                wiki_path_str += val
-                first = False
-            else:
-                wiki_path_str += " --> " + val
+        print("Finding path for", keyword_main)
+        # wiki_path = wiki_main(keyword_main, "Computer Science")
+        visited = set()
+        wiki_paths = wiki_bfs(keyword_main, "Glossary of computer science", visited, 0, [], 100)
+        wiki_path = get_probability_score(wiki_paths)
 
-    print(wiki_path)
+
+        if wiki_path == "N/A":
+            wiki_path_str = wiki_path
+        else:
+            first = True
+            wiki_path_str = ""
+            for val in wiki_path:
+                if first:
+                    wiki_path_str += val
+                    first = False
+                else:
+                    wiki_path_str += " --> " + val
+
+            rand_obj.wiki_path = wiki_path_str
+            rand_obj.save()
+
+        print(wiki_path)
 
     context["wiki_path"] = wiki_path_str
 
