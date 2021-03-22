@@ -56,7 +56,11 @@
   </form>
   <ul class="navbar-nav px-3">
     <li class="nav-item text-nowrap">
-      <a class="nav-link" href="#">Sign out</a>
+      {% if user.is_authenticated %}
+      <a class="nav-link" href="{% url 'logout' %}" style="text-decoration: none; color: white;">Sign out</a>
+      {% else %}
+      <a href="{% url 'login' %}" style="text-decoration: none; color: white;">Login</a>
+      {% endif %}
     </li>
   </ul>
 </header>
@@ -77,15 +81,28 @@
           </li>
         </li>
         <li class="nav-item">
+          <a class="nav-link active" href="{% url 'keyword_pages' %}">
+            <span data-feather="file"></span>
+            Keyword Pages
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="{% url 'verify_relationship_tool' %}">
             <span data-feather="user-check"></span>
             Verify Keyword Relationship Tool
           </a>
         </li>
+          
           <li class="nav-item">
-            <a class="nav-link active">
-              <span data-feather="file"></span>
-              Keyword Pages
+            <a class="nav-link" href="{% url 'verify_domain_tool' %}">
+              <span data-feather="user-check"></span>
+              Verify Domain Tool
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'verify_definition_tool' %}">
+              <span data-feather="user-check"></span>
+              Verify Definition Tool
             </a>
           </li>
           <!-- <li class="nav-item">
@@ -168,7 +185,27 @@
 
       <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
 
-      <h3>Other Users Have Matched This Keyword With:</h3>
+      <h3>Users Have Classified This Keyword Into The CS Domain</h3>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th># Belongs To CS</th>
+              <th># Does Not Belong to CS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{domain_pos}}</td>
+              <td>{{domain_neg}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p></p>
+
+      <h3>Users Have Matched This Keyword With:</h3>
       <div class="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
@@ -233,7 +270,7 @@
         var html = "";
 
         if (related_fst.length != 0) {
-          html = html.concat("<br><strong><h3>Words related to " + keyword_fst + "From Graph Embeddings</h3></strong>");
+          html = html.concat("<br><strong><h3>Words Related To " + keyword_fst + " From Google Suggested Queries Graph</h3></strong>");
           var res = related_fst.split("|");
           html = html.concat("<ul>");
           for (var i = 0; i < res.length; i++) {

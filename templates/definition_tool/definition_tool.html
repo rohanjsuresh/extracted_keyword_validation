@@ -61,10 +61,6 @@
           background-color: #db0000;  /* red */
           /* border-radius: 50%; */
       }
-
-      .glow-button {
-        box-shadow: 0 20px 15px rgba(100, 101, 94, 0.4);
-      }
     </style>
 
     
@@ -112,7 +108,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="{% url 'verify_relationship_tool' %}">
+            <a class="nav-link" href="{% url 'verify_relationship_tool' %}">
               <span data-feather="user-check"></span>
               Verify Keyword Relationship Tool
             </a>
@@ -124,7 +120,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'verify_definition_tool' %}">
+            <a class="nav-link active" href="{% url 'verify_definition_tool' %}">
               <span data-feather="user-check"></span>
               Verify Definition Tool
             </a>
@@ -138,32 +134,21 @@
         
       </div> -->
       <div style="padding-bottom: 25px;padding-top: 15px;">
-        <h3 style="display: inline-block;margin: 10px;">Identify keywords related to:   </h3>
+        <h3 style="display: inline-block;margin: 10px;">Is the definition below appropriate for the following keyword:</h3>
         <button type="button" class="btn btn-primary">{{ keyword_main }}</button>
+        <h4 style="margin: 10px;">"{{ candidate_definition }}"</h4>
         <p id = "grab_keyword_main" hidden>{{ keyword_main }}</p>
-      </div>
-      <div>
-        <p id = "grab_match_0" hidden>{{ match_0 }}</p>
-
-        <p id = "grab_match_1" hidden>{{ match_1 }}</p>
-
-        <p id = "grab_match_2" hidden>{{ match_2 }}</p>
-
-        <p id = "grab_match_3" hidden>{{ match_3 }}</p>
-
-        <p id = "grab_match_4" hidden>{{ match_4 }}</p>
+        <p id = "grab_definition" hidden>{{ candidate_definition }}</p>
       </div>
 
-
-      <!-- <h3>Click on keywords for further information.</h3> -->
-      <!-- <h3>More Information Below: </h3> -->
-
-      <!-- for getting data -->
-      <p hidden id="title_str">{{ title_str }}</p>
-      <p hidden id="abstract_str">{{ abstract_str }}</p>
-      <p hidden id="linked_title">{{ linked_title }}</p>
-      <p hidden id="related_fst">{{ related_fst }}</p>
-      <p hidden id="related_snd">{{ related_snd }}</p>
+      <div style="padding-left: 35%;">
+        <div class="form-check">
+            <button type="button" class="btn btn-success" style="width: 200px" onclick="capture_user_selection_accept()">Yes</button>
+        </div>
+        <div class="form-check">
+            <button type="button" class="btn btn-danger" style="width: 200px" onclick="capture_user_selection_reject()">No</button>
+        </div>
+      </div>
 
       <div id="model_data">
 
@@ -175,97 +160,48 @@
 
       <!-- images -->
 
-      <div style="padding-left: 10%;padding-top: 15px;">
-        <div style="display:inline; float:left;">
-          <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_0" onmouseover="info_selection('b0')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_0 }}</button>
-        </div>
-      <div style="display:inline; float:left;">
-        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_1" onmouseover="info_selection('b1')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_1 }}</button>
-      </div>
-
-      <div style="display:inline; float:left;">
-        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_2" onmouseover="info_selection('b2')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_2 }}</button>
-      </div>
-
-      <div style="display:inline; float:left;">
-        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_3" onmouseover="info_selection('b3')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_3 }}</button>
-      </div>
-
-      <div>
-        <button type="button" class="btn btn-outline-secondary" style="margin: 35px;" id="info_4" onmouseover="info_selection('b4')" onclick="capture_user_selection_accept(this)" ondblclick="capture_user_selection_reject(this)">{{ match_4 }}</button>
-      </div>
-
+    <div style="padding-left: 10%;padding-top: 15px;">
+   
     </div>
 
   
-    <div style="padding-left: 40%;padding-top: 15px;">
-      <p>&#10;</p>
-      <form method="post" action="/add_entry_rel_tool/">
-          {% csrf_token %}      
+    <div>
+      <form method="post" action="/definition_tool/add_entry_definition_tool/">
+        {% csrf_token %}      
 
-          <!-- keyword_main -->
-          <input type="text" value="" id="input_keyword_main" name="input_keyword_main" hidden/>
+        <!-- keyword_main -->
+        <input type="text" value="" id="input_keyword_main" name="input_keyword_main" hidden/>
+        <input type="text" value="" id="input_definition" name="input_definition" hidden/>
 
-          <!-- keyword 0 -->
-          <input type="text" value="" id="input_keyword_0" name="input_keyword_0" hidden/>
-          <input type="text" value="" id="user_selection_0" name="user_selection_0" hidden/>
+        <!-- belongs to domain -->
+        <input type="text" value="" id="user_selection" name="user_selection" hidden/>
 
-          <!-- keyword 1 -->
-          <input type="text" value="" id="input_keyword_1" name="input_keyword_1" hidden/>
-          <input type="text" value="" id="user_selection_1" name="user_selection_1" hidden/>
-
-          <!-- keyword 2 -->
-          <input type="text" value="" id="input_keyword_2" name="input_keyword_2" hidden/>
-          <input type="text" value="" id="user_selection_2" name="user_selection_2" hidden/>
-
-          <!-- keyword 3 -->
-          <input type="text" value="" id="input_keyword_3" name="input_keyword_3" hidden/>
-          <input type="text" value="" id="user_selection_3" name="user_selection_3" hidden/>
-
-          <!-- keyword 4 -->
-          <input type="text" value="" id="input_keyword_4" name="input_keyword_4" hidden/>
-          <input type="text" value="" id="user_selection_4" name="user_selection_4" hidden/>
-
-          <input type="submit" class="btn btn-light" style="font-size: 30px; width: 200px;"></input>
-        </form>
+        <input type="submit" class="btn btn-light" style="font-size: 30px; width: 200px;" id="real_submit" hidden></input>
+      </form>
     </div>
 
     <div>
       <hr>
 
-      <h2>Google Suggest Query Graph - Shortest Paths</h2>
+      <h2>Shortest Wikipedia Path: "Computer Science"</h2>
+      <div style="padding-bottom: 20px;">
+          <p>{{ wiki_path }}</p>
+      </div>
+
+      <h2>Neighbors from Google Suggested Queries Graph:</h2>
       <div id="graph_div" style="padding-bottom: 20px;">
         
       </div>
 
-      <h2>Co-occurence in Arxiv:</h2>
+      <h2>Occurence in Arxiv:</h2>
       <div id="arxiv_div" style="padding-bottom: 20px;">
         
       </div>
     </div>
-      <!-- <ul>
-        <li><strong>Title:</strong> Lorem ipsum dolor sit amet</li>
-        <li><strong>Abstract:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-      </ul>
 
-      <ul>
-        <li><strong>Title:</strong> Lorem ipsum dolor sit amet</li>
-        <li><strong>Abstract:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</li>
-      </ul> -->
-
-
-      <p id="grab_shortest_paths_0" hidden>{{ shortest_paths_0 }}</p>
-      <p id="grab_shortest_paths_1" hidden>{{ shortest_paths_1 }}</p>
-      <p id="grab_shortest_paths_2" hidden>{{ shortest_paths_2 }}</p>
-      <p id="grab_shortest_paths_3" hidden>{{ shortest_paths_3 }}</p>
-      <p id="grab_shortest_paths_4" hidden>{{ shortest_paths_4 }}</p>
-
-
-      <p id="grab_arxiv_info_0" hidden>{{ arxiv_info_0 }}</p>
-      <p id="grab_arxiv_info_1" hidden>{{ arxiv_info_1 }}</p>
-      <p id="grab_arxiv_info_2" hidden>{{ arxiv_info_2 }}</p>
-      <p id="grab_arxiv_info_3" hidden>{{ arxiv_info_3 }}</p>
-      <p id="grab_arxiv_info_4" hidden>{{ arxiv_info_4 }}</p>
+      <p id="grab_related_graph_main" hidden>{{ related_graph_main }}</p>
+      <p id="grab_arxiv_info" hidden>{{ arxiv_info }}</p>
+      <p id="grab_wiki_path" hidden>{{ wiki_path }}</p>
 
     </main>
   </div>
@@ -276,26 +212,19 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="{% static 'dashboard.js' %}"></script>
     <script>
 
-      function info_selection(button) {
-        var curr_id = "info_".concat(button[1]);
 
-        for (var i = 0; i < 5; i++) {
-          var temp_id =  "info_".concat(i.toString());
-          document.getElementById(temp_id).classList.remove("glow-button");
-        }
-        document.getElementById(curr_id).classList.add("glow-button");
+
+      function info_selection() {
 
         // set graph info
-        set_graph_info(button);
+        set_related_graph_info();
 
         // set arxiv info
-        set_arxiv_info(button);
+        set_arxiv_info();
       }
 
-      function set_graph_info(button) {
-        var curr_id = button[1];
-
-        var path_id =  "grab_arxiv_info_".concat(curr_id);
+      function set_related_graph_info(button) {
+        var path_id =  "grab_related_graph_main";
 
         var paths = document.getElementById(path_id).innerHTML;
 
@@ -313,46 +242,41 @@
           html = html.concat("</ul>");
 
           var main_keyword = document.getElementById("grab_keyword_main").innerHTML;
-          var match_keyword = document.getElementById("grab_match_".concat(curr_id)).innerHTML;
 
           html = html.replaceAll(main_keyword, "<strong>".concat(main_keyword.concat("</strong>")));
-          html = html.replaceAll(match_keyword, "<strong>".concat(match_keyword.concat("</strong>")));
+          
+          document.getElementById("graph_div").innerHTML = html;
+        } else {
+          document.getElementById("graph_div").innerHTML = "No Neighbor Information From Graph";
+        }
+      }
+
+      function set_arxiv_info() {
+
+        var path_id =  "grab_arxiv_info"
+
+        var paths = document.getElementById(path_id).innerHTML;
+
+        
+
+        if (paths.localeCompare("NA") != 0) {
+          var res = paths.split("|");
+          var html = "<ul>";
+            
+          for (var i = 0; i < res.length-1; i++) {
+            html = html.concat("<li>");
+            html = html.concat(res[i]);
+            html = html.concat("</li>");
+          }
+          html = html.concat("</ul>");
+
+          var main_keyword = document.getElementById("grab_keyword_main").innerHTML;
+
+          html = html.replaceAll(main_keyword, "<strong>".concat(main_keyword.concat("</strong>")));
           
           document.getElementById("arxiv_div").innerHTML = html;
         } else {
           document.getElementById("arxiv_div").innerHTML = "No Arxiv information found.";
-        }
-      }
-
-      function set_arxiv_info(button) {
-        var curr_id = button[1];
-
-        var path_id =  "grab_shortest_paths_".concat(curr_id);
-
-        var paths = document.getElementById(path_id).innerHTML;
-
-        
-
-        if (paths.localeCompare("NA") != 0) {
-          var res = paths.split("|");
-          var html = "<ul>";
-            
-          for (var i = 0; i < res.length-1; i++) {
-            html = html.concat("<li>");
-            html = html.concat(res[i]);
-            html = html.concat("</li>");
-          }
-          html = html.concat("</ul>");
-
-          var main_keyword = document.getElementById("grab_keyword_main").innerHTML;
-          var match_keyword = document.getElementById("grab_match_".concat(curr_id)).innerHTML;
-
-          html = html.replaceAll(main_keyword, "<strong>".concat(main_keyword.concat("</strong>")));
-          html = html.replaceAll(match_keyword, "<strong>".concat(match_keyword.concat("</strong>")));
-          
-          document.getElementById("graph_div").innerHTML = html;
-        } else {
-          document.getElementById("graph_div").innerHTML = "No paths found.";
         }
       }
 
@@ -449,40 +373,20 @@
         document.getElementById("model_data").innerHTML = html;
       }
 
-
-      function capture_user_selection_accept(button) {
-        var id_val = button.id[5];
-        var radio_id = "keyword_relation_radio_".concat(id_val);
-        var match_id = "grab_match_".concat(id_val);
-        var input_key_id = "input_keyword_".concat(id_val);
-        var user_sel_id = "user_selection_".concat(id_val);
-
-        button.className = "btn btn-success glow-button";
-
-        var check = "1";
-
-        document.getElementById(input_key_id).value = document.getElementById(match_id).innerHTML;
-        document.getElementById(user_sel_id).value = check;
+      function capture_user_selection_accept() {
+        document.getElementById("user_selection").value = "1";
+        document.getElementById("real_submit").click();
       }
 
-      function capture_user_selection_reject(button) {
-        var id_val = button.id[5];
-        var radio_id = "keyword_relation_radio_".concat(id_val);
-        var match_id = "grab_match_".concat(id_val);
-        var input_key_id = "input_keyword_".concat(id_val);
-        var user_sel_id = "user_selection_".concat(id_val);
-
-        button.className = "btn btn-danger glow-button";
-
-        var check = "0";
-
-        document.getElementById(input_key_id).value = document.getElementById(match_id).innerHTML;
-        document.getElementById(user_sel_id).value = check;
+      function capture_user_selection_reject() {
+        document.getElementById("user_selection").value = "0";
+        document.getElementById("real_submit").click();
       }
 
       window.onload = function() {
         info_selection("b0"); 
         document.getElementById("input_keyword_main").value = document.getElementById("grab_keyword_main").innerHTML;
+        document.getElementById("input_definition").value = document.getElementById("grab_definition").innerHTML;
       }
 
     </script>
