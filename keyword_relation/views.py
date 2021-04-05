@@ -50,7 +50,7 @@ def keyword_pages(request, context = {}):
             if first:
                 wikipedia_content_str = keywords.wiki_definition
             else:
-                wikipedia_content_str += keywords.wiki_definition
+                wikipedia_content_str += "|" + keywords.wiki_definition
         else:
             try:
                 summary = wikipedia.summary(keywords.keyword, sentences=1)
@@ -73,17 +73,6 @@ def keyword_pages(request, context = {}):
                 else: 
                     wikipedia_content_str += "|" + summary
 
-            keywords.wiki_definition = summary
-            keywords.save()
-
-            # except wikipedia.exceptions.PageError:
-            #     print(keywords.keyword)
-            #     if first:
-            #         wikipedia_content_str += wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
-            #     else: 
-            #         wikipedia_content_str += "|" + wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
-            # except:
-            #     wikipedia_content_str += "| N/A"
             keywords.wiki_definition = summary
             keywords.save()
 
