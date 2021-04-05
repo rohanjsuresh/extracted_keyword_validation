@@ -124,16 +124,11 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
       <div class="container" style="width: 100%; margin: 5px;">
-            <div class="row">
-              <div class="col">
-
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
               <h1>Keyword Pages</h1>
             </div>
-
-            <div class="container">
               <div class="row">
-                <div class="col-sm">
+                <div class="col">
 
                   <div class="input-group">
                     <div class="form-outline">
@@ -149,7 +144,7 @@
 
                 </div>
                 
-                <div class="col-sm">
+                <div class="col">
 
                   <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
@@ -165,7 +160,7 @@
                             {% csrf_token %}
                             <input type="text" placeholder="Search Similar Keywords (eg. machine learning, deep learning)" aria-label="find_similar_keywords" name="search_input" id="search_input">
                           </form>
-                      
+
                         </div>
                       </div>
                     </div>
@@ -173,32 +168,31 @@
                 </div>
                 </div>
               </div>
-            </div>
 
-            </div>
+              <p hidden id="grab_keyords">{{ keywords }}</p>
+              <p hidden id="grab_wikipedia_content">{{ wikipedia_content }}</p>
+              <p hidden id="grab_related_keywords">{{ related_keywords }}</p>
 
-
+              
             <!-- <h3>Use the search bar to find relationships for a given keyword.</h3> -->
-            <div class="table-responsive">
-              <table class="table table-striped table-sm" id="mainTable">
-                <thead>
-                  <tr>
-                    <th>Keywords</th>
-                    <th>Wikipedia Definition</th>
-                    <th>Related Keywords</th>
-                  </tr>
-                </thead>
-                <tbody id="list_matched">
+            <div class="row">
+              <div class="col">
+                <div class="table-responsive">
+                  <table class="table table-striped table-sm" id="mainTable">
+                    <thead>
+                      <tr>
+                        <th>Keywords</th>
+                        <th>Wikipedia Definition</th>
+                        <th>Related Keywords</th>
+                      </tr>
+                    </thead>
+                    <tbody id="list_matched">
 
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
+                </div>
             </div>
 
-          <p hidden id="grab_keyords">{{ keywords }}</p>
-          <p hidden id="grab_wikipedia_content">{{ wikipedia_content }}</p>
-          <p hidden id="grab_related_keywords">{{ related_keywords }}</p>
-        </div>
-        
           <div class="col" hidden id="iframe_div" style="border-left: 1px dashed #333;">
             <!-- <iframe id="encoder_iframe" height=75% width="50%" src="http://127.0.0.1:8000/domainness_tool/verify_domain_tool"></iframe> -->
           </div>

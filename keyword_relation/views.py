@@ -55,7 +55,7 @@ def keyword_pages(request, context = {}):
             try:
                 summary = wikipedia.summary(keywords.keyword, sentences=1)
                 if first:
-                    wikipedia_content_str += summary
+                    wikipedia_content_str = summary
                 else: 
                     wikipedia_content_str += "|" + summary
 
@@ -69,7 +69,7 @@ def keyword_pages(request, context = {}):
             except:
                 summary = "N/A / Disambiguation"
                 if first:
-                    wikipedia_content_str += summary
+                    wikipedia_content_str = summary
                 else: 
                     wikipedia_content_str += "|" + summary
 
@@ -78,7 +78,7 @@ def keyword_pages(request, context = {}):
 
 
         if first:
-            related_keywords_str += keywords.matched_with 
+            related_keywords_str = keywords.matched_with 
         else: 
             # Different delimeter used because DB uses '|' and ',' as delimeter
             related_keywords_str += "&" + keywords.matched_with
@@ -89,8 +89,8 @@ def keyword_pages(request, context = {}):
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
 
-    print(keyword_str)
-    print(related_keywords_str)
+    # print(keyword_str)
+    # print(related_keywords_str)
 
     return render(request, 'keyword_relation/keyword_pages_default.html', context)
 
@@ -114,12 +114,12 @@ def keyword_pages_default_adv_search_1(request, context = {}):
             if first:
                 wikipedia_content_str = keywords.wiki_definition
             else:
-                wikipedia_content_str += keywords.wiki_definition
+                wikipedia_content_str += "|" + keywords.wiki_definition
         else:
             try:
                 summary = wikipedia.summary(keywords.keyword, sentences=1)
                 if first:
-                    wikipedia_content_str += summary
+                    wikipedia_content_str = summary
                 else: 
                     wikipedia_content_str += "|" + summary
 
@@ -133,27 +133,16 @@ def keyword_pages_default_adv_search_1(request, context = {}):
             except:
                 summary = "N/A / Disambiguation"
                 if first:
-                    wikipedia_content_str += summary
+                    wikipedia_content_str = summary
                 else: 
                     wikipedia_content_str += "|" + summary
 
             keywords.wiki_definition = summary
             keywords.save()
 
-            # except wikipedia.exceptions.PageError:
-            #     print(keywords.keyword)
-            #     if first:
-            #         wikipedia_content_str += wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
-            #     else: 
-            #         wikipedia_content_str += "|" + wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
-            # except:
-            #     wikipedia_content_str += "| N/A"
-            keywords.wiki_definition = summary
-            keywords.save()
-
 
         if first:
-            related_keywords_str += keywords.matched_with 
+            related_keywords_str = keywords.matched_with 
         else: 
             # Different delimeter used because DB uses '|' and ',' as delimeter
             related_keywords_str += "&" + keywords.matched_with
@@ -164,83 +153,76 @@ def keyword_pages_default_adv_search_1(request, context = {}):
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
 
-    print(keyword_str)
-    print(related_keywords_str)
+    # print(keyword_str)
+    # print(related_keywords_str)
 
     return render(request, 'keyword_relation/keyword_pages_default_adv_search_1.html', context)
 
 def keyword_pages_default_adv_search_2(request, to_return, context = {},):
     #render spreadsheet
     all_keywords = Keyword_Pages.objects.all()
-
     keyword_str = ""
     wikipedia_content_str = ""
     related_keywords_str = ""
     first = True
 
+    print("To Return")
+    print(to_return)
+
     for keywords in all_keywords:
-        if first and keywords.keyword in to_return:
-            keyword_str += keywords.keyword 
-        elif keywords.keyword in to_return: 
-            keyword_str += "|" + keywords.keyword
-
-        # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
-        if keywords.wiki_definition != "":
+        if keywords.keyword in to_return:
             if first:
-                wikipedia_content_str = keywords.wiki_definition
+                keyword_str += keywords.keyword 
+            else: 
+                keyword_str += "|" + keywords.keyword
+
+            # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
+            if keywords.wiki_definition != "":
+                if first:
+                    wikipedia_content_str = keywords.wiki_definition
+                else:
+                    wikipedia_content_str += "|" + keywords.wiki_definition
             else:
-                wikipedia_content_str += keywords.wiki_definition
-        else:
-            try:
-                summary = wikipedia.summary(keywords.keyword, sentences=1)
-                if first:
-                    wikipedia_content_str += summary
-                else: 
-                    wikipedia_content_str += "|" + summary
+                try:
+                    summary = wikipedia.summary(keywords.keyword, sentences=1)
+                    if first:
+                        wikipedia_content_str = summary
+                    else: 
+                        wikipedia_content_str += "|" + summary
 
-            # except wikipedia.DisambiguationError as e:
-            #     s = e.options[0]
-            #     summary = wikipedia.summary(keywords.keyword, sentences=1)
-            #     if first:
-            #         wikipedia_content_str += summary
-            #     else: 
-            #         wikipedia_content_str += "|" + summary
-            except:
-                summary = "N/A / Disambiguation"
-                if first:
-                    wikipedia_content_str += summary
-                else: 
-                    wikipedia_content_str += "|" + summary
+                # except wikipedia.DisambiguationError as e:
+                #     s = e.options[0]
+                #     summary = wikipedia.summary(keywords.keyword, sentences=1)
+                #     if first:
+                #         wikipedia_content_str += summary
+                #     else: 
+                #         wikipedia_content_str += "|" + summary
+                except:
+                    summary = "N/A / Disambiguation"
+                    if first:
+                        wikipedia_content_str = summary
+                    else: 
+                        wikipedia_content_str += "|" + summary
 
-            keywords.wiki_definition = summary
-            keywords.save()
-
-            # except wikipedia.exceptions.PageError:
-            #     print(keywords.keyword)
-            #     if first:
-            #         wikipedia_content_str += wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
-            #     else: 
-            #         wikipedia_content_str += "|" + wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
-            # except:
-            #     wikipedia_content_str += "| N/A"
-            keywords.wiki_definition = summary
-            keywords.save()
+                keywords.wiki_definition = summary
+                keywords.save()
 
 
-        if first:
-            related_keywords_str += keywords.matched_with 
-        else: 
-            # Different delimeter used because DB uses '|' and ',' as delimeter
-            related_keywords_str += "&" + keywords.matched_with
+            if first:
+                related_keywords_str = keywords.matched_with 
+            else: 
+                # Different delimeter used because DB uses '|' and ',' as delimeter
+                related_keywords_str += "&" + keywords.matched_with
 
-        first = False
+            first = False
 
-    context["keywords"] = keyword_str 
+    context["keywords"] = keyword_str
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
 
+    print("Results")
     print(keyword_str)
-    print(related_keywords_str)
+    print(wikipedia_content_str)
 
     return render(request, 'keyword_relation/keyword_pages_default_adv_search_2.html', context)
 
@@ -614,8 +596,6 @@ def dynamic_lookup_view(request, keyword):
         # "matched":obj.matched_with,
     }
 
-    print("LOOOK")
-
     obj_rel = User_Validation.objects.filter(main_keyword=keyword, task_id="REL_TOOL")
     obj_domain = User_Validation.objects.filter(main_keyword=keyword, task_id="DOMAIN_TOOL")
 
@@ -658,12 +638,20 @@ def dynamic_lookup_view(request, keyword):
     context["matched"] = matched_str
 
     # models
-    model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
-    model = Word2Vec.load(model_path)
+    rand_obj = Keyword_Pages.objects.get(keyword=keyword)
+    
+    if rand_obj.google_graph_embedding != "":
+        related_main = rand_obj.google_graph_embedding
+    else:
+        model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
+        model = Word2Vec.load(model_path)
 
-    related_fst = find_similar_keywords(model, keyword)
+        related_main = find_similar_keywords(model, keyword_main)
 
-    context["related_fst"] = related_fst
+        rand_obj.google_graph_embedding = related_main
+        rand_obj.save()
+
+    context["related_fst"] = related_main
 
     title_str = ""
     abstract_str = ""
@@ -741,7 +729,7 @@ def find_similar_keyword_default(request):
     return render(request, 'keyword_relation/find_similar_keyword_default.html', {})
 
 def find_similar_keywords_result(request, features):
-
+    print("test")
     l_userinput = request.POST.getlist("l")[0]
     p_userinput = request.POST.getlist("p")[0]
     sub_userinput = request.POST.getlist("sub")[0]
@@ -817,6 +805,8 @@ def find_similar_keywords_result(request, features):
     context = {
         "result": to_return[:10],
     }
+    print(to_return)
+    print("here")
     return keyword_pages_default_adv_search_2(request, to_return)
     # return render(request, 'keyword_relation/find_similar_keyword_result.html', context)
 
