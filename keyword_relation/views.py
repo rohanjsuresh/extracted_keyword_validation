@@ -85,7 +85,7 @@ def keyword_pages(request):
             #         wikipedia_content_str += "|" + wikipedia.summary(keywords.keyword.replace(" ", ""), sentences=1)
             # except:
             #     wikipedia_content_str += "| N/A"
-            keywords.wiki_definition = wikipedia_content_str
+            keywords.wiki_definition = summary
             keywords.save()
 
 
@@ -590,7 +590,7 @@ def search_similar_result(request):
     return find_similar_keywords_result(request, features)
 
 colnames = ["id","keyword","ngram","length","pos","abstractID", "score"]
-data = pandas.read_csv('/Users/rohansuresh/Desktop/extracted_keyword_validation/arxiv_data/aminer_mag_combined_cs_keywords.csv', names = colnames)
+data = pandas.read_csv('/Users/rohansuresh/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
 keywords = data.keyword.to_list()[1:500]
 length = data.length.to_list()[1:500]
 pos = data.pos.to_list()[1:500]

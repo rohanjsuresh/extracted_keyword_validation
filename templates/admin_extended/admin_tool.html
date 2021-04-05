@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.79.0">
+    <title>Keyword Data Tools</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/dashboard/">
+
+
+    {% load static %}
+
+
+    <!-- Bootstrap core CSS -->
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      form {
+        display: flex;
+        flex-flow: column;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    <link href="{% static 'dashboard.css' %}" rel="stylesheet">
+  </head>
+  <body>
+    
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Keyword Data Tools</a>
+  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <form method="post" action="/search/">
+    {% csrf_token %}
+    <input class="form-control form-control-dark w-100" type="text" placeholder="Search Keywords" aria-label="Search" name="search_input" id="search_input">
+  </form>
+  <ul class="navbar-nav px-3">
+    <li class="nav-item text-nowrap">
+      {% if user.is_authenticated %}
+      <a class="nav-link" href="{% url 'logout' %}" style="text-decoration: none; color: white;">Sign out</a>
+      {% else %}
+      <a href="{% url 'login' %}" style="text-decoration: none; color: white;">Login</a>
+      {% endif %}
+    </li>
+  </ul>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'home' %}">
+              <span data-feather="home"></span>
+              Home
+            </a>
+          </li>
+          {% if user.is_superuser %}
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'admin_tool' %}">
+              <span data-feather="sliders"></span>
+              Admin Tool
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'keyword_pages' %}">
+              <span data-feather="file"></span>
+              Keyword Pages
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'find_similar_keyword_default' %}">
+              <span data-feather="user-check"></span>
+              Find Similar Keyword Tool
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'verify_relationship_tool' %}">
+              <span data-feather="user-check"></span>
+              Verify Keyword Relationship Tool
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'verify_domain_tool' %}">
+              <span data-feather="user-check"></span>
+              Verify Domain Tool
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'verify_definition_tool' %}">
+              <span data-feather="user-check"></span>
+              Verify Definition Tool
+            </a>
+          </li>
+      </div>
+    </nav>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      {% if uploaded_file_url %}
+      <div class="alert alert-success" role="alert">
+        <p>File: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a> was successfully uploaded</p>
+      </div>
+      {% endif %}
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Admin Tool</h1>
+      </div>
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Keywords Dashboard
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <canvas id="chart"></canvas>
+    <script>
+    let ctx = document.getElementById('chart');
+    $.ajax({
+        url: '/myadmin/populate-chart/',
+        success: function(response){
+        new Chart(ctx, {
+            type: 'horizontalBar',
+            data: {
+            labels: response.labels,
+            datasets: [{
+                data: response.data_pos,
+                backgroundColor: 'rgba(25, 123, 235, 0.79)',
+                label: "# Positive Classifications"
+            }, 
+            {
+                data: response.data_neg,
+                backgroundColor: 'rgba(235, 25, 25, 0.79)',
+                label: "# Negative Classifications"  
+            }]
+            },
+        });
+        }
+    });
+    </script>
+
+
+            </div>
+          </div>
+        </div>
+        <!-- <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Users Dashboard
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+          </div>
+        </div> -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Upload Data
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <form method="post" enctype="multipart/form-data" action="/myadmin/simple_upload/">
+                {% csrf_token %}
+                <input type="file" name="myfile">
+                <button type="submit">Upload</button>
+              </form>
+            
+              {% if uploaded_file_url %}
+                <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+      <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script><script src="{% static 'dashboard.js' %}"></script>
+  </body>
+</html>

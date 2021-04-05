@@ -43,3 +43,9 @@ class User_Validation(models.Model):
     # Columns for definition tool
     definition_is_def_valid = models.IntegerField(default=-1)
     definition_candidate_definition = models.CharField(max_length=4096, default="N/A")
+
+class User_Validation_Summary(User_Validation):
+    class Meta:
+        proxy = True
+        verbose_name = "User Validation Summary"
+        verbose_name_plural = "Users Validation Summary"
