@@ -88,7 +88,7 @@
           </li>
           {% endif %}
           <li class="nav-item">
-            <a class="nav-link active" href="{% url 'keyword_pages' %}">
+            <a class="nav-link active" href="{% url 'keyword_pages' %}" id="url_keyword_pages">
               <span data-feather="file"></span>
               Keyword Pages
             </a>
@@ -143,6 +143,9 @@
                         <div class="input-group-append">
                           <button type="button" class="btn btn-secondary" onclick="sortTable()">Sort Table</button>
                         </div>
+                        
+                        <button type="button" class="btn btn-danger" id="reset">Reset</button>
+                        
                       </div>
                     </div>
                   </div>
@@ -216,6 +219,11 @@
 
       let table_map = new Map();
       var search_val = "";
+
+      // reset search
+      document.getElementById("reset").onclick = function () {
+          location.href = document.getElementById("url_keyword_pages").href;
+      };
 
       // generate iframe
       function generate_iframe(keyword) {

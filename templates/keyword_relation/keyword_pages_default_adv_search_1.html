@@ -158,14 +158,44 @@
                           Advanced Filtering
                         </button>
                       </h2>
-                      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
 
                           <form method="post" action="/search_similar/">
                             {% csrf_token %}
                             <input type="text" placeholder="Search Similar Keywords (eg. machine learning, deep learning)" aria-label="find_similar_keywords" name="search_input" id="search_input">
                           </form>
+                          <div>
+                            <legend>Length: {{length}}, POS: {{POS}}, Substring: {{substring}}, Lowest Score: {{score}}, Cosine: {{cosine}}</legend>
+                          </div>
+                          <div>
+                            <form method="post" action="/search_similar_result/">      
+                              {% csrf_token %}
+                              <h3>What conditions do you want to set?</h3>  
+                              <legend>Common Length:</legend>  
+                              <input type="text" name="l">
+                              <legend>Common POS</legend> 
+                              <input type="text" name="p"> 
+                              <legend>Common substring</legend> 
+                              <input type="text" name="sub"> 
+                              <legend>Lowest score </legend> 
+                              <input type="text" name="s"> 
+                              <legend>Cosine Similarity </legend> 
+                              <input type="text" name="cos"> 
+                              <input type="text" name="ks">
                       
+                              <fieldset>
+                                  <h3>What features do you want to choose?</h3>      
+                                  <input type="checkbox" name="features" value="l:{{length}}">Common Length<br>      
+                                  <input type="checkbox" name="features" value="p:{{POS}}">Common POS<br>
+                                  <input type="checkbox" name="features" value="sub:{{substring}}">Common substring<br>
+                                  <input type="checkbox" name="features" value="s:{{score}}">Lowest score<br>
+                                  <input type="checkbox" name="features" value="cos:{{cosine}}">Cosine Similarity<br>
+                                  <input type="submit" value="Submit now" />      
+                              </fieldset>      
+                            </form>
+
+
                         </div>
                       </div>
                     </div>
