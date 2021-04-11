@@ -220,6 +220,13 @@
 
                     </tbody>
                   </table>
+
+                  <div class="d-flex justify-content-center text-primary" id="loading">
+                    <div class="spinner-border" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                  </div>
+
                 </div>
             </div>
 
@@ -314,6 +321,7 @@
         }
 
         document.getElementById("list_matched").innerHTML = html;
+        document.getElementById("loading").innerHTML = "";
 
       }
 

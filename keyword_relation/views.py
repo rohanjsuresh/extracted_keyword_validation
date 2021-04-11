@@ -30,9 +30,21 @@ def home(request):
         context["message"] = "Login/Register to use the tools!"
     return render(request, 'keyword_relation/index.html', context)
 
-def keyword_pages(request, context = {}):
+# def keyword_pages_default(request):
+#     return keyword_pages(request, 0)
+
+def keyword_pages(request):
+
+    # TODO See if pagination required
+    # # pagination
+    # page_num = int(page_num)
+    # num_per_page = 20
+    # count = 0
+
     #render spreadsheet
-    all_keywords = Keyword_Pages.objects.all()
+    all_keywords = Keyword_Pages.objects.order_by('keyword')
+
+    context = {}
 
     keyword_str = ""
     wikipedia_content_str = ""
@@ -40,6 +52,14 @@ def keyword_pages(request, context = {}):
     first = True
 
     for keywords in all_keywords:
+
+        # keywords = all_keywords[i]
+        if "|" in keywords.keyword:
+            keywords.keyword = keywords.keyword.replace("|", " ")
+        # count += 1
+        # if count > num_per_page:
+        #     break
+
         if first:
             keyword_str += keywords.keyword 
         else: 
@@ -53,7 +73,8 @@ def keyword_pages(request, context = {}):
                 wikipedia_content_str += "|" + keywords.wiki_definition
         else:
             try:
-                summary = wikipedia.summary(keywords.keyword, sentences=1)
+                # summary = wikipedia.summary(keywords.keyword, sentences=1)
+                summary = "test_wiki_def"
                 if first:
                     wikipedia_content_str = summary
                 else: 
@@ -102,6 +123,7 @@ def keyword_pages_default_adv_search_1(request, context = {}):
     wikipedia_content_str = ""
     related_keywords_str = ""
     first = True
+
 
     for keywords in all_keywords:
         if first:
@@ -591,6 +613,10 @@ def add_entry_rel_tool(request):
     return verify_relationship_tool(request)
 
 def dynamic_lookup_view(request, keyword):
+
+    keyword = keyword.rstrip("\n")
+    print(keyword)
+
     context = {
         "keyword":keyword,
         # "matched":obj.matched_with,
@@ -637,21 +663,21 @@ def dynamic_lookup_view(request, keyword):
         matched_str += ","
     context["matched"] = matched_str
 
-    # models
-    rand_obj = Keyword_Pages.objects.get(keyword=keyword)
+    # # models
+    # rand_obj = Keyword_Pages.objects.get(keyword=keyword)
     
-    if rand_obj.google_graph_embedding != "":
-        related_main = rand_obj.google_graph_embedding
-    else:
-        model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
-        model = Word2Vec.load(model_path)
+    # if rand_obj.google_graph_embedding != "":
+    #     related_main = rand_obj.google_graph_embedding
+    # else:
+    #     model_path = os.path.join(settings.STATIC_ROOT,'../models/related_keywords_graph_embedding.model')
+    #     model = Word2Vec.load(model_path)
 
-        related_main = find_similar_keywords(model, keyword_main)
+    #     related_main = find_similar_keywords(model, keyword_main)
 
-        rand_obj.google_graph_embedding = related_main
-        rand_obj.save()
+    #     rand_obj.google_graph_embedding = related_main
+    #     rand_obj.save()
 
-    context["related_fst"] = related_main
+    # context["related_fst"] = related_main
 
     title_str = ""
     abstract_str = ""

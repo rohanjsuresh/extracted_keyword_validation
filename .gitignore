@@ -1,4 +1,6 @@
 boot/
+media/
+arxiv_data/
 arxiv-metadata-oai-snapshot.json
 arxiv_abstracts.npy
 arxiv_titles.npy

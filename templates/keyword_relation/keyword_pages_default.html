@@ -135,9 +135,15 @@
                       <div class="input-group mb-3">
                         <label class="form-label" for="form1">Search</label>
                         <input type="search" id="dynamic_search" class="form-control" />
-                        <div class="input-group-append">
-                          <button type="button" class="btn btn-secondary" onclick="sortTable()">Sort Table</button>
+
+                        <!-- DISABLED FOR NOW -->
+                        <!-- TODO Speedup for larger dataset -->
+                        <!-- <div class="input-group-append">
+                          <button type="button" class="btn btn-secondary" onclick="sortTableAlph()">Sort Table Alphabetically</button>
                         </div>
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-secondary" onclick="sortTableLen()">Sort Table By Length</button>
+                        </div> -->
                       </div>
                     </div>
                   </div>
@@ -187,9 +193,16 @@
                       </tr>
                     </thead>
                     <tbody id="list_matched">
-
+                      
                     </tbody>
                   </table>
+                  
+                  <div class="d-flex justify-content-center text-primary" id="loading">
+                    <div class="spinner-border" role="status">
+                      <span class="sr-only"></span>
+                    </div>
+                  </div>
+
                 </div>
             </div>
 
@@ -271,7 +284,6 @@
               record = record.concat(", ");
               record = record.concat(related_keywords_str_res[i].split(",")[j].split("|")[0]);
             }
-            // alert(html);
           }
           
           record = record.concat("</td>");
@@ -282,14 +294,15 @@
           html = html.concat(record);
 
         }
-
+  
         document.getElementById("list_matched").innerHTML = html;
+        document.getElementById("loading").innerHTML = "";
 
       }
 
       // sort table alphabetically
       // https://www.tutorialspoint.com/how-to-sort-an-html-table-using-javascript
-      function sortTable() {
+      function sortTableAlph() {
       var filterTable, rows, sorted, i, x, y, sortFlag;
       filterTable = document.getElementById("mainTable");
       sorted = true;
@@ -301,6 +314,31 @@
             x = rows[i].getElementsByTagName("TD")[0];
             y = rows[i + 1].getElementsByTagName("TD")[0];
             if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+               sortFlag = true;
+               break;
+            }
+         }
+         if (sortFlag) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            sorted = true;
+         }
+      }
+   }
+
+      // sort table by length
+      // adapted from https://www.tutorialspoint.com/how-to-sort-an-html-table-using-javascript
+      function sortTableLen() {
+      var filterTable, rows, sorted, i, x, y, sortFlag;
+      filterTable = document.getElementById("mainTable");
+      sorted = true;
+      while (sorted) {
+         sorted = false;
+         rows = filterTable.rows;
+         for (i = 1; i < rows.length - 1; i++) {
+            sortFlag = false;
+            x = rows[i].getElementsByTagName("TD")[0];
+            y = rows[i + 1].getElementsByTagName("TD")[0];
+            if (x.innerHTML.length > y.innerHTML.length) {
                sortFlag = true;
                break;
             }
@@ -332,7 +370,7 @@
           let result = iterator1.next();
           while (!result.done) {
 
-            if (result.value.startsWith(res_val)) {
+            if (result.value.includes(res_val)) {
               html = html.concat(table_map.get(result.value));
             }
 

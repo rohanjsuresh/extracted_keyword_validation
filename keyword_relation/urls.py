@@ -7,7 +7,9 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('keyword_pages/<str:keyword>', views.dynamic_lookup_view, name='dynamic_lookup_view'),
+    path('keyword_pages_search/<str:keyword>', views.dynamic_lookup_view, name='dynamic_lookup_view'),
+    # path('keyword_pages_default', views.keyword_pages_default, name='keyword_pages_default'),
+    # path('keyword_pages/<str:page_num>', views.keyword_pages, name='keyword_pages'),
     path('keyword_pages', views.keyword_pages, name='keyword_pages'),
     path('verify_relationship_tool', views.verify_relationship_tool, name='verify_relationship_tool'),
     path('find_similar_keyword_default', views.find_similar_keyword_default, name='find_similar_keyword_default'),
