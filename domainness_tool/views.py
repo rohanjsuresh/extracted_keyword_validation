@@ -231,8 +231,8 @@ def verify_domain_tool_iframe(request, keyword):
                 else:
                     wiki_path_str += " --> " + val
 
-            rand_obj.wiki_path = wiki_path_str
-            rand_obj.save()
+        rand_obj.wiki_path = wiki_path_str
+        rand_obj.save()
 
         print(wiki_path)
 
