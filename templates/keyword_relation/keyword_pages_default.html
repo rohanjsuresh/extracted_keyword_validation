@@ -133,8 +133,11 @@
                   <div class="input-group">
                     <div class="form-outline">
                       <div class="input-group mb-3">
-                        <label class="form-label" for="form1">Search</label>
+                        <!-- <label class="form-label" for="form1">Search</label> -->
                         <input type="search" id="dynamic_search" class="form-control" />
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-secondary" onclick="search_table()">Search</button>
+                        </div>
 
                         <!-- DISABLED FOR NOW -->
                         <!-- TODO Speedup for larger dataset -->
@@ -350,9 +353,10 @@
       }
    }
 
-      document.addEventListener('keyup', logKey);
+      // document.addEventListener('keyup', logKey);
 
-      function logKey(e) {
+      // function logKey(e) {
+      function search_table(e) {
 
         res_val = document.getElementById("dynamic_search").value;
 
