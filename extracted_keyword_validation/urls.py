@@ -23,6 +23,7 @@ urlpatterns = [
     path(r'', include('keyword_relation.urls')),
     path(r'domainness_tool/', include('domainness_tool.urls')),
     path(r'definition_tool/', include('definition_tool.urls')),
+     path(r'clustering_vis/', include('clustering_vis.urls')),
     path('admin/', admin.site.urls),
     url(r"^accounts/", include("django.contrib.auth.urls")),
     path(r"users/", include('users.urls')),
