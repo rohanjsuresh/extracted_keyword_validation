@@ -624,7 +624,6 @@ def add_entry_rel_tool(request):
 def dynamic_lookup_view(request, keyword):
 
     keyword = keyword.rstrip("\n")
-    print(keyword)
 
     context = {
         "keyword":keyword,
@@ -751,11 +750,22 @@ def search_similar(request):
 
 def search_similar_result(request):
     features = request.POST.getlist("features")
-    print("features" )
-    print(features)
     return find_similar_keywords_result(request, features)
 
 # Kino: find similar keyword code ##################
+def add_to_filter(request):
+
+    # get main keyword 
+    main_keyword = request.POST.get("input_keyword").lower()
+    print("hello" + main_keyword)
+
+    context = {"input":main_keyword}
+
+    # return render(request, 'keyword_relation/find_similar_keyword_default.html', context)
+    return render(request, 'keyword_relation/keyword_pages_default2.html', context)
+
+
+
 colnames = ["id","keyword","ngram","length","pos","abstractID", "score"]
 data = pandas.read_csv('/Users/mac/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
 keywords = data.keyword.to_list()[1:5000]

@@ -128,7 +128,7 @@
         </button>
         <form method="post" action="/search_similar/">
           {% csrf_token %}
-          <input class="form-control form-control-dark w-100" type="text" placeholder="Search Similar Keywords (eg. machine learning, deep learning)" aria-label="find_similar_keywords" name="search_input" id="search_input">
+          <input class="form-control form-control-dark w-100" type="text" value="{{input}}" aria-label="find_similar_keywords" name="search_input" id="search_input">
         </form>
         <!-- <div id="list_matched" class="h3">
   
