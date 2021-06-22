@@ -148,6 +148,10 @@
                           <button type="button" class="btn btn-secondary" onclick="sortTableLen()">Sort Table By Length</button>
                         </div> -->
                       </div>
+                      <div id="classify_checkbox" hidden>
+                        <button type="button" class="btn btn-success" onclick="checkbox_submit()">Belongs to CS</button>
+                        <button type="button" class="btn btn-danger" onclick="checkbox_submit()">Does not belong to CS</button>
+                      </div>
                     </div>
                   </div>
 
@@ -181,6 +185,7 @@
               <p hidden id="grab_keyords">{{ keywords }}</p>
               <p hidden id="grab_wikipedia_content">{{ wikipedia_content }}</p>
               <p hidden id="grab_related_keywords">{{ related_keywords }}</p>
+              <p hidden id="grab_score_map">{{ score_map }}</p>
 
               
             <!-- <h3>Use the search bar to find relationships for a given keyword.</h3> -->
@@ -190,7 +195,9 @@
                   <table class="table table-striped table-sm" id="mainTable">
                     <thead>
                       <tr>
+                        <th>Classify Domain</th>
                         <th>Keywords</th>
+                        <th>Score</th>
                         <th>Wikipedia Definition</th>
                         <th>Related Keywords</th>
                       </tr>
@@ -226,6 +233,18 @@
 
       let table_map = new Map();
       var search_val = "";
+      let checkbox_counter = 0
+      
+      // show checkboxes to classify checkboxes
+      function show_checkbox_classify() {
+        document.getElementById("classify_checkbox").hidden = false;
+      }
+
+      // checkbox submit
+      function checkbox_submit(){ 
+        location.reload();
+        return false;
+      }
 
       // generate iframe
       function generate_iframe(keyword) {
@@ -253,12 +272,20 @@
         var related_keywords_str = document.getElementById("grab_related_keywords").innerHTML;
         var related_keywords_str_res = related_keywords_str.split("&amp;");
 
+        var score_str = document.getElementById("grab_score_map").innerHTML;
+        var score_str_res = score_str.split("|");
+        // console.log(score_str_res);
+
         var html = ""
 
         for (var i = 0; i < keywords_str_res.length; i++) {
           var record = "";
 
           record = record.concat("<tr>");
+
+          record = record.concat("<td>");
+          record = record.concat('<input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" onclick="show_checkbox_classify()">');
+          record = record.concat("</td>");  
           
           record = record.concat("<td>");
           record = record.concat("<a href=\"#\" onclick=\"generate_iframe('");
@@ -269,6 +296,10 @@
           record = record.concat("</td>");
 
           // alert("hit");
+
+          record = record.concat("<td>");
+          record = record.concat(score_str_res[i]);
+          record = record.concat("</td>");
 
           record = record.concat("<td>");
           record = record.concat(wikipedia_content_str_res[i]);

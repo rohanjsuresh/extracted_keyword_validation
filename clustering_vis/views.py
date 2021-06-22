@@ -10,6 +10,8 @@ import functools
 import numpy as np
 import json
 from django.core.management import call_command
+from funky_sheets.formsets import HotView
+
 
 
 # Create your views here.
@@ -30,13 +32,16 @@ def visualization(request):
     for i in range(83000):
         corpus_old.append(Lines[i].strip())
 
-    output = show_hierarchy(len(model.children_), model.children_, corpus_old)
+    num_iters = len(model.children_)
+    num_iters = 5
+
+    output = show_hierarchy(num_iters, model.children_, corpus_old)
 
     context = {}
     context["output"] = output
     context["max"] = len(model.children_)
     # context["num_iters"] = len(model.children_)
-    context["num_iters"] = 5
+    context["num_iters"] = num_iters
 
     # context["dendogram_data"] = dendogram(model, corpus_old)
     # dendogram(model, corpus_old)
