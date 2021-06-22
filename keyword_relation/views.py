@@ -59,6 +59,12 @@ def keyword_pages(request):
     related_keywords_str = ""
     first = True
 
+    score_map = os.path.join(settings.STATIC_ROOT,'../arxiv_data/keyword_score_map.pkl')
+    with open(score_map, 'rb') as input:
+        keyword_score_map = pickle.load(input)
+
+    score_str = ""
+
     for keywords in all_keywords:
 
         # keywords = all_keywords[i]
@@ -70,8 +76,18 @@ def keyword_pages(request):
 
         if first:
             keyword_str += keywords.keyword 
+
+            if keywords.keyword in keyword_score_map.keys():
+                score_str += str(keyword_score_map[keywords.keyword])
+            else:
+                score_str += "1"
         else: 
             keyword_str += "|" + keywords.keyword
+
+            if keywords.keyword in keyword_score_map.keys():
+                score_str += "|" + str(keyword_score_map[keywords.keyword])
+            else:
+                score_str += "|1"
 
         # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
         if keywords.wiki_definition != "":
@@ -117,6 +133,8 @@ def keyword_pages(request):
     context["keywords"] = keyword_str 
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
+    print(score_str[:-1000])
+    context["score_map"] = score_str
 
     # print(keyword_str)
     # print(related_keywords_str)
@@ -753,16 +771,16 @@ def search_similar_result(request):
     return find_similar_keywords_result(request, features)
 
 # Kino: find similar keyword code ##################
-def add_to_filter(request):
+# def add_to_filter(request):
 
-    # get main keyword 
-    main_keyword = request.POST.get("input_keyword").lower()
-    print("hello" + main_keyword)
+#     # get main keyword 
+#     main_keyword = request.POST.get("input_keyword").lower()
+#     print("hello" + main_keyword)
 
-    context = {"input":main_keyword}
+#     context = {"input":main_keyword}
 
-    # return render(request, 'keyword_relation/find_similar_keyword_default.html', context)
-    return render(request, 'keyword_relation/keyword_pages_default2.html', context)
+#     # return render(request, 'keyword_relation/find_similar_keyword_default.html', context)
+#     return render(request, 'keyword_relation/keyword_pages_default2.html', context)
 
 
 
