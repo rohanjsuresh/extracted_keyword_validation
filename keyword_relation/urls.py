@@ -2,7 +2,8 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import TemplateView
+from django.conf.urls import url
+from django.views.generic import RedirectView
 
 
 urlpatterns = [
@@ -18,4 +19,6 @@ urlpatterns = [
     path(r'search_similar_result/', views.search_similar_result, name='search_similar_result'),
     path(r'add_entry/', views.add_entry, name='add_entry'),
     path(r'add_entry_rel_tool/', views.add_entry_rel_tool, name='add_entry_rel_tool'),
+    path(r'add_to_filter/', views.add_to_filter, name='add_to_filter'),
+    url(r'^favicon\.ico$',RedirectView.as_view(url='/static/images/favicon.ico')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

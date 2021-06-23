@@ -9,6 +9,7 @@ from django.conf.urls.static import static
 import os
 from django.conf import settings
 import numpy as np
+from numpy.linalg import norm
 import random
 from gensim.models import Word2Vec
 import wikipedia
@@ -19,6 +20,13 @@ from gensim.models import Word2Vec
 from nltk.corpus import wordnet
 import pandas
 import pickle
+from sklearn.metrics.pairwise import cosine_similarity
+from transformers import *
+import torch
+import spacy
+from whoosh.index import create_in
+from whoosh.index import open_dir
+from whoosh.fields import *
 
 # Create your views here.
 
@@ -260,6 +268,7 @@ def keyword_pages_default_adv_search_2(request, to_return, context = {},):
     context["keywords"] = keyword_str
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
+    context["result"] = to_return[:20]
 
     print("Results")
     print(keyword_str)
@@ -634,7 +643,6 @@ def add_entry_rel_tool(request):
 def dynamic_lookup_view(request, keyword):
 
     keyword = keyword.rstrip("\n")
-    print(keyword)
 
     context = {
         "keyword":keyword,
@@ -755,21 +763,114 @@ def search(request):
 
 def search_similar(request):
     keyword = request.POST.get("search_input")
+    if len(keyword) == 0:
+        return render(request, 'keyword_relation/find_similar_keyword_default_error.html', {})
     return find_similar_keywords(request, keyword)
 
 def search_similar_result(request):
     features = request.POST.getlist("features")
     return find_similar_keywords_result(request, features)
 
-colnames = ["id","keyword","ngram","length","pos","abstractID", "score"]
-data = pandas.read_csv('/Users/rohansuresh/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
-keywords = data.keyword.to_list()[1:500]
-length = data.length.to_list()[1:500]
-pos = data.pos.to_list()[1:500]
-score = data.score.to_list()[1:500]
-
-
 # Kino: find similar keyword code ##################
+def add_to_filter(request):
+
+    # get main keyword 
+    main_keyword = request.POST.get("input_keyword").lower()
+    print("hello" + main_keyword)
+
+    context = {"input":main_keyword}
+
+    # return render(request, 'keyword_relation/find_similar_keyword_default.html', context)
+    return render(request, 'keyword_relation/keyword_pages_default2.html', context)
+
+
+
+colnames = ["id","keyword","ngram","length","pos","abstractID", "score"]
+data = pandas.read_csv('/Users/mac/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
+keywords = data.keyword.to_list()[1:5000]
+length = data.length.to_list()[1:5000]
+pos = data.pos.to_list()[1:5000]
+score = data.score.to_list()[1:5000]
+
+f = open('/Users/mac/Desktop/Keyword Research/similar_title/arxiv_abstracts_cornell.txt', 'r')
+abstracts = f.readlines()[:3000]
+abstracts_num = len(abstracts)
+
+f = open('/Users/mac/Desktop/anc_VOL15_3.txt', 'r')
+english_corpus = f.readlines()
+english_corpus_num = len(english_corpus)
+
+f = open('/Users/mac/Desktop/1000_common_words.txt', 'r')
+common_words = f.readlines()
+
+tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
+model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
+
+nlp = spacy.load("en_core_web_sm")
+
+def npmi(word_list1, word_list2, N):
+
+    N1 = len(word_list1)         # number of documents containing word1, initialized to be 1 to avoid zero counts
+    N2 = len(word_list2)         # number of documents containing word2
+    overlap_list = list(set(word_list1) & set(word_list2))
+    N3 = len(overlap_list)          # number of times both words appear in a document together
+
+    if N1 < 3 or N2 < 3 or N3 < 1:
+        return 0.0
+
+    prob_w1 = N1 / N
+    prob_w2 = N2 / N
+    prob_w12 = N3 / N
+    npmi = np.log(prob_w12 / (prob_w1 * prob_w2)) / (- np.log(prob_w12))
+    return npmi
+
+
+def create_hit_list(keywords, abstracts):
+    """
+        format of hit_list: dictionary
+        {each keyword:[abstract_id1, abstract_id2...]}
+    """
+    schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
+
+    if not os.path.exists("index"):
+        os.mkdir("index")
+    ix = create_in("index",schema)
+    ix = open_dir("index")
+
+    writer = ix.writer()
+    for i in range(len(abstracts)):
+        writer.add_document(title=str(i), content=abstracts[i])
+    writer.commit()
+
+    searcher = ix.searcher()
+
+    dic = {}
+    for k in keywords:
+        results = searcher.find("content", k)
+        dic[k] = []
+        for r in results:
+            dic[k].append(int(r["title"]))
+
+    return dic
+
+
+hit_dic = create_hit_list(keywords, abstracts)
+hit_dic2 = create_hit_list(keywords, english_corpus)
+
+def embed_text(text, model):
+    input_ids = torch.tensor(tokenizer.encode(text)).unsqueeze(0)  # Batch size 1
+    outputs = model(input_ids)
+    last_hidden_states = outputs[0]  # The last hidden-state is the first element of the output tuple
+    return last_hidden_states 
+
+def find_pos(text):
+    doc = nlp(text)
+    final = []
+    for j in doc:
+        final.append(j.pos_)
+    return final
+
+
 def find_similar_keyword_default(request):
     return render(request, 'keyword_relation/find_similar_keyword_default.html', {})
 
@@ -779,6 +880,14 @@ def find_similar_keywords_result(request, features):
     p_userinput = request.POST.getlist("p")[0]
     sub_userinput = request.POST.getlist("sub")[0]
     s_userinput = request.POST.getlist("s")[0]
+    cos_userinput = request.POST.getlist("cos")[0]
+    npmi_userinput = request.POST.getlist("npmi")[0]
+    f_userinput = request.POST.getlist("f")[0]
+    f2_userinput = request.POST.getlist("f2")[0]
+    g_userinput = request.POST.getlist("g")[0]
+
+    ori_keyword = request.POST.getlist("ks")[0]
+    em2 = embed_text(ori_keyword, model).mean(1)
 
     dic = {}
 
@@ -790,68 +899,156 @@ def find_similar_keywords_result(request, features):
     pos_list = []
     substring_list = []
     score_list = []
+    cos_list = []
+    npmi_list = []
+    frequency_list = []
+    frequency2_list = []
+    general_word_list = []
 
     lflag = False
     pflag = False
     subflag = False
     sflag = False
+    cosflag = False
+    npmiflag = False
+    fflag = False
+    fflag2 = False
+    gflag = False
+
+    to_return = []
 
     for i in range(len(length)):
         keyword = keywords[i]
-        for k,v in dic.items():
-            if k == 'l':
-                lflag = True
-                if length[i] == int(l_userinput):
-                    length_list.append(keyword)
-            if k == 'p':
-                pflag = True
-                if pos[i] == p_userinput:
-                    pos_list.append(keyword)
-            if k == 'sub':
-                subflag = True
-                if sub_userinput in keyword:
-                    substring_list.append(keyword)
-            if k == 's':
-                sflag = True
-                if float(s_userinput) < float(score[i]):
-                    score_list.append(keyword)
-
-    to_return = []
-    replaced = False
-
-    if lflag:
-        if replaced:
-            to_return = list(set(to_return) & set(length_list))
+        if len(features) == 0:
+            if length[i] == int(l_userinput):
+                to_return.append(keyword)
+            # if pos[i] == p_userinput:
+            #     to_return.append(keyword)
+            if find_pos(keyword) == p_userinput:
+                to_return.append(keyword)
+            if sub_userinput in keyword:
+                to_return.append(keyword)
+            if float(s_userinput) < float(score[i]):
+                to_return.append(keyword)
         else:
-            to_return = length_list
-            replaced = True
+            for k,v in dic.items():
+                if k == 'l':
+                    lflag = True
+                    if length[i] == int(l_userinput):
+                        length_list.append(keyword)
+                if k == 'p':
+                    pflag = True
+                    # if pos[i] == p_userinput:
+                    #     pos_list.append(keyword)
+                    if find_pos(keyword) == p_userinput:
+                        pos_list.append(keyword)
+                if k == 'sub':
+                    subflag = True
+                    if sub_userinput in keyword:
+                        substring_list.append(keyword)
+                if k == 's':
+                    sflag = True
+                    if float(s_userinput) < float(score[i]):
+                        score_list.append(keyword)
+                if k == 'cos':
+                    cosflag = True
+                    em1 = embed_text(keyword, model).mean(1)
+                    temp = cosine_similarity(em1.detach().numpy(), em2.detach().numpy())[0][0]
+                    if float(cos_userinput) < float(temp):
+                        cos_list.append(keyword)
+                if k == 'npmi':
+                    npmiflag = True
+                    word_list1 = hit_dic[ori_keyword]
+                    word_list2 = hit_dic[keyword]
+                    temp = npmi(word_list1, word_list2, 3000)
+                    if float(npmi_userinput) < float(temp):
+                        npmi_list.append(keyword)
+                if k == 'f':
+                    fflag = True
+                    if len(hit_dic[keyword]) > int(f_userinput):
+                        frequency_list.append(keyword)
+                if k == 'f2':
+                    fflag2 = True
+                    if len(hit_dic2[keyword]) > int(f2_userinput):
+                        frequency2_list.append(keyword)
+                if k == 'g':
+                    gflag = True
+                    temp = keyword.split(" ")
+                    for t in temp:
+                        if str(g_userinput) == t:
+                            general_word_list.append(keyword)
+                            break
 
-    if pflag:
-        if replaced:
-            to_return = list(set(to_return) & set(pos_list))
-        else:
-            to_return = pos_list
-            replaced = True
 
-    if subflag:
-        if replaced:
-            to_return = list(set(to_return) & set(substring_list))
-        else:
-            to_return = substring_list
-            replaced = True
+    if len(features) != 0:
+        to_return = []
+        replaced = False
 
-    if sflag:
-        if replaced:
-            to_return = list(set(to_return) & set(score_list))
-        else:
-            to_return = score_list
-            replaced = True
+        if lflag:
+            if replaced:
+                to_return = list(set(to_return) & set(length_list))
+            else:
+                to_return = length_list
+                replaced = True
 
-    context = {
-        "result": to_return[:10],
-    }
-    print(to_return)
-    print("here")
+        if pflag:
+            if replaced:
+                to_return = list(set(to_return) & set(pos_list))
+            else:
+                to_return = pos_list
+                replaced = True
+
+        if subflag:
+            if replaced:
+                to_return = list(set(to_return) & set(substring_list))
+            else:
+                to_return = substring_list
+                replaced = True
+
+        if sflag:
+            if replaced:
+                to_return = list(set(to_return) & set(score_list))
+            else:
+                to_return = score_list
+                replaced = True
+
+        if cosflag:
+            if replaced:
+                to_return = list(set(to_return) & set(cos_list))
+            else:
+                to_return = cos_list
+                replaced = True
+
+        if npmiflag:
+            if replaced:
+                to_return = list(set(to_return) & set(npmi_list))
+            else:
+                to_return = npmi_list
+                replaced = True
+
+        if fflag:
+            if replaced:
+                to_return = list(set(to_return) & set(frequency_list))
+            else:
+                to_return = frequency_list
+                replaced = True
+
+        if fflag2:
+            if replaced:
+                to_return = list(set(to_return) & set(frequency2_list))
+            else:
+                to_return = frequency2_list
+                replaced = True
+
+        if gflag:
+            if replaced:
+                to_return = list(set(to_return) & set(general_word_list))
+            else:
+                to_return = general_word_list
+                replaced = True
+
+    to_return = list(set(to_return))
+
     return keyword_pages_default_adv_search_2(request, to_return)
     # return render(request, 'keyword_relation/find_similar_keyword_result.html', context)
 
@@ -872,17 +1069,79 @@ def is_substr(find, data):
             return False
     return True
 
+def sentence_bert_similarity(words):
+
+    def mean_pooling(model_output, attention_mask):
+        token_embeddings = model_output[0] #First element of model_output contains all token embeddings
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
+        sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+        return sum_embeddings / sum_mask
+
+    #Load AutoModel from huggingface model repository
+    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/bert-base-nli-mean-tokens")
+    model = AutoModel.from_pretrained("sentence-transformers/bert-base-nli-mean-tokens")
+
+    #Tokenize sentences
+    encoded_input = tokenizer(words, padding=True, truncation=True, max_length=128, return_tensors='pt')
+
+    #Compute token embeddings
+    with torch.no_grad():
+        model_output = model(**encoded_input)
+
+    #Perform pooling
+    sentence_embeddings = np.array(mean_pooling(model_output, encoded_input['attention_mask']))
+
+    cos_sim = np.dot(sentence_embeddings[0], sentence_embeddings[1]) / (norm(sentence_embeddings[0]) * norm(sentence_embeddings[1]))
+
+    return cos_sim
+
 def find_similar_keywords(request, ks):
-    each_keyword = ks.split(',')
-    input_keywords = each_keyword
     seen_first_flag = False
     length_value = -1
     length_flag = False
     pos_value = ""
     pos_flag = False
-    count = 0
-
     min_score = 1.0
+    count = 0
+    frequency_value = 0
+    frequency_value2 = 0
+    general_word_value = ""
+
+
+    if ',' not in ks:
+        for i in range(len(keywords)):
+            if ks == keywords[i]:
+                # pos_value = pos[i]
+                pos_value = find_pos(ks)
+                length_value = len(ks)
+                min_score = score[i]
+                frequency_value = len(hit_dic[ks])
+                frequency_value2 = len(hit_dic2[ks])
+
+        for i in ks.split(" "):
+            for c in common_words:
+                if i == c.strip():
+                    general_word_value = c
+        
+        context = {
+            "length": length_value,
+            "POS": pos_value,
+            "substring": ks,
+            "score": min_score,
+            "cosine": 0,
+            "npmi": 0,
+            "frequency": frequency_value / abstracts_num,
+            "frequency2": frequency_value2 / english_corpus_num,
+            "general": general_word_value,
+            "ks": ks
+        }
+        return keyword_pages_default_adv_search_1(request, context)
+
+
+    input_keywords = ks.split(',')
+    each_keyword = [i.strip() for i in input_keywords]
+    
 
     for i in range(len(keywords)):
         for k in each_keyword:
@@ -893,17 +1152,20 @@ def find_similar_keywords(request, ks):
                     min_score = x
                 if not seen_first_flag:
                     length_value = length[i]
-                    pos_value = pos[i]
+                    # pos_value = pos[i]
+                    pos_value = find_pos(k)
                     seen_first_flag = length_flag = pos_flag = True
                 else:
                     if length_value != length[i]:
                         length_flag = False
-                    if pos_value != pos[i]:
+                    # if pos_value != pos[i]:
+                    #     pos_flag = False
+                    if pos_value != find_pos(k):
                         pos_flag = False
 
     if count != len(each_keyword):
         length_value = -1
-        pos_value = "cannot find keyword in dataset"
+        # pos_value = "cannot find keyword in dataset"
     else:
         if not length_flag:
             length_value = -1
@@ -912,14 +1174,52 @@ def find_similar_keywords(request, ks):
 
     common_substring = long_substr(each_keyword)
 
+    cosine_similarity_score = []
 
+    npmi_score = []
+    frequency = []
+    frequency2 = []
+
+    for i in range(len(each_keyword)):
+        for j in range(i+1, len(each_keyword)):
+            words = [each_keyword[i], each_keyword[j]]
+            temp = sentence_bert_similarity(words)
+            cosine_similarity_score.append(temp)
+
+            word_list1 = hit_dic[each_keyword[i]]
+            word_list2 = hit_dic[each_keyword[j]]
+            npmi_temp = npmi(word_list1, word_list2, 3000)
+            npmi_score.append(npmi_temp)
+            frequency.append(len(word_list1))
+            frequency.append(len(word_list2))
+            frequency2.append(len(hit_dic2[each_keyword[i]]))
+            frequency2.append(len(hit_dic2[each_keyword[i]]))
+
+    cos_value = np.min(cosine_similarity_score)
+    npmi_value = np.min(npmi_score)
+    frequency_value = np.min(frequency)
+    frequency_value2 = np.min(frequency2)
+
+    for i in common_words:
+        if i.strip() in common_substring:
+            general_word_value = i + ", " + general_word_value
+
+    print("here" + general_word_value)
 
     context = {
         "length": length_value,
         "POS": pos_value,
         "substring": common_substring,
-        "score": min_score
+        "score": min_score,
+        "cosine": cos_value,
+        "npmi": npmi_value,
+        "frequency": frequency_value / abstracts_num,
+        "frequency2": frequency_value2 / english_corpus_num,
+        "general": general_word_value,
+        "ks": ks
     }
+
+
     return keyword_pages_default_adv_search_1(request, context)
     # return render(request, 'keyword_relation/find_similar_keyword.html', context)
 

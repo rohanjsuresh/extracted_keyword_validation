@@ -167,7 +167,7 @@
                             <form method="post" action="/search_similar_result/">      
                               {% csrf_token %}
                               <h3>What conditions do you want to set?</h3>  
-                              <legend>Common Length:</legend>  
+                              <!-- <legend>Common Length:</legend>  
                               <input type="text" name="l">
                               <legend>Common POS</legend> 
                               <input type="text" name="p"> 
@@ -177,7 +177,26 @@
                               <input type="text" name="s"> 
                               <legend>Cosine Similarity </legend> 
                               <input type="text" name="cos"> 
-                              <input type="text" name="ks">
+                              <input type="text" name="ks"> -->
+                                <legend>Common Length:</legend>  
+                                <input type="text" name="l" value="{{length}}">
+                                <legend>Common POS</legend> 
+                                <input type="text" name="p" value="{{POS}}"> 
+                                <legend>Common substring</legend> 
+                                <input type="text" name="sub" value="{{substring}}"> 
+                                <legend>Lowest score </legend> 
+                                <input type="text" name="s" value="{{score}}"> 
+                                <legend>Cosine Similarity </legend> 
+                                <input type="text" name="cos" value="{{cosine}}"> 
+                                <legend>NPMI Score </legend> 
+                                <input type="text" name="npmi" value="{{npmi}}"> 
+                                <legend>Frequency in CS Corpus </legend> 
+                                <input type="text" name="f" value="{{frequency}}">
+                                <legend>Frequency in English Corpus </legend> 
+                                <input type="text" name="f2" value="{{frequency2}}"> 
+                                <legend>General English Word </legend> 
+                                <input type="text" name="g" value="{{general}}">
+                                <input type="text" name="ks" value="{{ks}}">
                       
                               <fieldset>
                                   <h3>What features do you want to choose?</h3>      
@@ -186,6 +205,10 @@
                                   <input type="checkbox" name="features" value="sub:{{substring}}">Common substring<br>
                                   <input type="checkbox" name="features" value="s:{{score}}">Lowest score<br>
                                   <input type="checkbox" name="features" value="cos:{{cosine}}">Cosine Similarity<br>
+                                  <input type="checkbox" name="features" value="npmi:{{npmi}}">NPMI Score<br>
+                                  <input type="checkbox" name="features" value="f:{{frequency}}">Frequency in CS Corpus<br>
+                                  <input type="checkbox" name="features" value="f2:{{frequency2}}">Frequency in English Corpus<br>
+                                  <input type="checkbox" name="features" value="g:{{general}}">General English Word<br>
                                   <input type="submit" value="Submit now" />      
                               </fieldset>      
                             </form>
@@ -204,7 +227,7 @@
               <p hidden id="grab_related_keywords">{{ related_keywords }}</p>
 
               
-            <!-- <h3>Use the search bar to find relationships for a given keyword.</h3> -->
+            <!-- <h3>Use the search bar to find relationships for a given keyword.</h3> 
             <div class="row">
               <div class="col">
                 <div class="table-responsive">
@@ -228,7 +251,7 @@
                   </div>
 
                 </div>
-            </div>
+            </div> -->
 
           <div class="col" hidden id="iframe_div" style="border-left: 1px dashed #333;">
             <!-- <iframe id="encoder_iframe" height=75% width="50%" src="http://127.0.0.1:8000/domainness_tool/verify_domain_tool"></iframe> -->

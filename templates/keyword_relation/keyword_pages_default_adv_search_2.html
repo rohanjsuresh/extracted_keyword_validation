@@ -165,7 +165,11 @@
                             {% csrf_token %}
                             <input type="text" placeholder="Search Similar Keywords (eg. machine learning, deep learning)" aria-label="find_similar_keywords" name="search_input" id="search_input">
                           </form>
-                      
+
+                            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                                <h3>{{result}}</h3>
+                            </div>
+                        
                         </div>
                       </div>
                     </div>
