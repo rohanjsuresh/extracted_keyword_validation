@@ -49,3 +49,7 @@ class User_Validation_Summary(User_Validation):
         proxy = True
         verbose_name = "User Validation Summary"
         verbose_name_plural = "Users Validation Summary"
+
+class Keyword_Grouping(models.Model):
+    keyword = models.CharField(max_length=512)
+    group = models.IntegerField(default=-1)

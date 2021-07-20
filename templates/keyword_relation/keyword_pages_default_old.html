@@ -148,7 +148,7 @@
                           <button type="button" class="btn btn-secondary" onclick="sortTableLen()">Sort Table By Length</button>
                         </div> -->
                       </div>
-                      <div id="classify_checkbox">
+                      <div id="classify_checkbox" hidden>
                         <button type="button" class="btn btn-success" onclick="checkbox_submit()">Belongs to CS</button>
                         <button type="button" class="btn btn-danger" onclick="checkbox_submit()">Does not belong to CS</button>
                       </div>
@@ -166,7 +166,7 @@
                           Advanced Filtering
                         </button>
                       </h2>
-                      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#list_matched">
+                      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
 
                           <form method="post" action="/search_similar/">
@@ -178,7 +178,7 @@
                       </div>
                     </div>
                   </div>
-                </div>  
+                </div>
                 </div>
               </div>
 
@@ -186,18 +186,7 @@
               <p hidden id="grab_wikipedia_content">{{ wikipedia_content }}</p>
               <p hidden id="grab_related_keywords">{{ related_keywords }}</p>
               <p hidden id="grab_score_map">{{ score_map }}</p>
-              <p hidden id="grab_group_map">{{ group_map }}</p>
 
-            <!-- Pagination -->
-            <br>
-            <nav aria-label="Page navigation example">
-              <form method="post" action="/pagination/" id = "pagination_form">
-              {% csrf_token %}
-                <ul class="pagination">
-                  <li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="1">1</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="2">2</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="3">3</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="4">4</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="5">5</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="6">6</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="7">7</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="8">8</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="9">9</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="10">10</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="11">11</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="12">12</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="13">13</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="14">14</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="15">15</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="16">16</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="17">17</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="18">18</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="19">19</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="20">20</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="21">21</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="22">22</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="23">23</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="24">24</button></a></li><li class="page-item"><a class="page-link"><button style="width:100%;height:100%; background: transparent;border: none !important;" name="page_num" value="25">25</button></a></li>
-                </ul>
-              </form>
-            </nav>
               
             <!-- <h3>Use the search bar to find relationships for a given keyword.</h3> -->
             <div class="row">
@@ -206,17 +195,15 @@
                   <table class="table table-striped table-sm" id="mainTable">
                     <thead>
                       <tr>
+                        <th>Classify Domain</th>
                         <th>Keywords</th>
+                        <th>Score</th>
+                        <th>Wikipedia Definition</th>
+                        <th>Related Keywords</th>
                       </tr>
                     </thead>
-                    <tbody >
-                      <tr>
-                          <td>
-                            <div class="accordion" id="list_matched">
-                              
-                            </div>
-                          </td>
-                      </tr>
+                    <tbody id="list_matched">
+                      
                     </tbody>
                   </table>
                   
@@ -287,53 +274,59 @@
 
         var score_str = document.getElementById("grab_score_map").innerHTML;
         var score_str_res = score_str.split("|");
-
-        var group_str = document.getElementById("grab_group_map").innerHTML;
-        var group_str_res = group_str.split("|");
+        // console.log(score_str_res);
 
         var html = ""
 
-        for (var i = 0; i < group_str_res.length; i++) {
+        for (var i = 0; i < keywords_str_res.length; i++) {
           var record = "";
-          var curr_group_res = group_str_res[i].split("*");
 
-          record = "<div class=\"accordion-item\"><h2 class=\"accordion-header\" id=\"heading";
-          record = record.concat(i.toString());
-          record = record.concat("\"><button class=\"accordion-button\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse");
-          record = record.concat(i.toString());
-          record = record.concat("\" aria-expanded=\"true\" aria-controls=\"collapse");
-          record = record.concat(i.toString());
-          record = record.concat("\">");
+          record = record.concat("<tr>");
 
-          record = record.concat(curr_group_res[0]);
+          record = record.concat("<td>");
+          record = record.concat('<input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" onclick="show_checkbox_classify()">');
+          record = record.concat("</td>");  
           
+          record = record.concat("<td>");
+          record = record.concat("<a href=\"#\" onclick=\"generate_iframe('");
+          record = record.concat(keywords_str_res[i]);
+          record = record.concat("')\">");
+          record = record.concat(keywords_str_res[i]);
+          record = record.concat("</a>");
+          record = record.concat("</td>");
 
-          record = record.concat("</button>");
-          record = record.concat("</h2><div id=\"collapse");
-          record = record.concat(i.toString());
+          // alert("hit");
 
-          if (i == 0) {
-            record = record.concat("\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading");
-          } else {
-            record = record.concat("\" class=\"accordion-collapse collapse\" aria-labelledby=\"heading");
+          record = record.concat("<td>");
+          record = record.concat(score_str_res[i]);
+          record = record.concat("</td>");
+
+          record = record.concat("<td>");
+          record = record.concat(wikipedia_content_str_res[i]);
+          record = record.concat("</td>");
+
+          record = record.concat("<td>");
+          
+          var first = true;
+          var res = related_keywords_str_res[i].split(",");
+          for (var j = 0; j < res.length; j++) {
+
+            if (first) {
+              record = record.concat(related_keywords_str_res[i].split(",")[j].split("|")[0]);
+              first = false;
+            } else {
+              record = record.concat(", ");
+              record = record.concat(related_keywords_str_res[i].split(",")[j].split("|")[0]);
+            }
           }
-          record = record.concat(i.toString());
-          record = record.concat("\" data-bs-parent=\"#list_matched\"><div class=\"accordion-body\">");
+          
+          record = record.concat("</td>");
 
-          for (var j = 0; j < curr_group_res.length; j++) {
-            
-            record = record.concat("<input type=\"checkbox\" id=\"vehicle1\" name=\"vehicle1\" value=\"Bike\"><label for=\"vehicle1\">");
-            var temp = ""
-            record = record.concat("<a href=\"#\" onclick=\"generate_iframe('");
-            record = record.concat(curr_group_res[j]);
-            record = record.concat("')\">");
-            record = record.concat(curr_group_res[j]);
-            record = record.concat("</a>");
-            record = record.concat("</label><br>");
+          record = record.concat("</tr>");
 
-          }
-          record = record.concat("</div></div></div>");
+          table_map.set(keywords_str_res[i], record);
           html = html.concat(record);
+
         }
   
         document.getElementById("list_matched").innerHTML = html;
