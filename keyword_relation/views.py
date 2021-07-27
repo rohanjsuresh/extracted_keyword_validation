@@ -524,11 +524,8 @@ def keyword_pages_default_adv_search_2(request, to_return, context = {},):
     context["keywords"] = keyword_str
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
-<<<<<<< HEAD
     context["score_map"] = score_str
-=======
     context["result"] = to_return[:20]
->>>>>>> 83db4947972802a085ca76a4f2bf51f05ab80c3a
 
     print("Results")
     print(keyword_str)
@@ -1046,25 +1043,30 @@ def search_similar_result(request):
 
 
 colnames = ["id","keyword","ngram","length","pos","abstractID", "score"]
-data = pandas.read_csv('/Users/mac/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
+try:
+    data = pandas.read_csv('/Users/mac/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
+except:
+    data = pandas.read_csv('/Users/rohansuresh/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
 keywords = data.keyword.to_list()[1:5000]
 length = data.length.to_list()[1:5000]
 pos = data.pos.to_list()[1:5000]
 score = data.score.to_list()[1:5000]
 
-f = open('/Users/mac/Desktop/Keyword Research/similar_title/arxiv_abstracts_cornell.txt', 'r')
-abstracts = f.readlines()[:3000]
-abstracts_num = len(abstracts)
+# TODO: put files on owl/git
 
-f = open('/Users/mac/Desktop/anc_VOL15_3.txt', 'r')
-english_corpus = f.readlines()
-english_corpus_num = len(english_corpus)
+# f = open('/Users/mac/Desktop/Keyword Research/similar_title/arxiv_abstracts_cornell.txt', 'r')
+# abstracts = f.readlines()[:3000]
+# abstracts_num = len(abstracts)
 
-f = open('/Users/mac/Desktop/1000_common_words.txt', 'r')
-common_words = f.readlines()
+# f = open('/Users/mac/Desktop/anc_VOL15_3.txt', 'r')
+# english_corpus = f.readlines()
+# english_corpus_num = len(english_corpus)
 
-tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
-model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
+# f = open('/Users/mac/Desktop/1000_common_words.txt', 'r')
+# common_words = f.readlines()
+
+# tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
+# model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -1085,37 +1087,37 @@ def npmi(word_list1, word_list2, N):
     return npmi
 
 
-def create_hit_list(keywords, abstracts):
-    """
-        format of hit_list: dictionary
-        {each keyword:[abstract_id1, abstract_id2...]}
-    """
-    schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
+# def create_hit_list(keywords, abstracts):
+#     """
+#         format of hit_list: dictionary
+#         {each keyword:[abstract_id1, abstract_id2...]}
+#     """
+#     schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
 
-    if not os.path.exists("index"):
-        os.mkdir("index")
-    ix = create_in("index",schema)
-    ix = open_dir("index")
+#     if not os.path.exists("index"):
+#         os.mkdir("index")
+#     ix = create_in("index",schema)
+#     ix = open_dir("index")
 
-    writer = ix.writer()
-    for i in range(len(abstracts)):
-        writer.add_document(title=str(i), content=abstracts[i])
-    writer.commit()
+#     writer = ix.writer()
+#     for i in range(len(abstracts)):
+#         writer.add_document(title=str(i), content=abstracts[i])
+#     writer.commit()
 
-    searcher = ix.searcher()
+#     searcher = ix.searcher()
 
-    dic = {}
-    for k in keywords:
-        results = searcher.find("content", k)
-        dic[k] = []
-        for r in results:
-            dic[k].append(int(r["title"]))
+#     dic = {}
+#     for k in keywords:
+#         results = searcher.find("content", k)
+#         dic[k] = []
+#         for r in results:
+#             dic[k].append(int(r["title"]))
 
-    return dic
+#     return dic
 
 
-hit_dic = create_hit_list(keywords, abstracts)
-hit_dic2 = create_hit_list(keywords, english_corpus)
+# hit_dic = create_hit_list(keywords, abstracts)
+# hit_dic2 = create_hit_list(keywords, english_corpus)
 
 def embed_text(text, model):
     input_ids = torch.tensor(tokenizer.encode(text)).unsqueeze(0)  # Batch size 1
