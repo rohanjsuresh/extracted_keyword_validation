@@ -52,7 +52,7 @@
   </button>
   <form method="post" action="/search/">
     {% csrf_token %}
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search Keywords" aria-label="Search" name="search_input" id="search_input">
+    <input class="form-control form-control-dark w-100" type="text" placeholder="Search Keywords" aria-label="Search" name="input" id="input">
   </form>
   <ul class="navbar-nav px-3">
     <li class="nav-item text-nowrap">
@@ -151,6 +151,7 @@
                       <div id="classify_checkbox">
                         <button type="button" class="btn btn-success" onclick="checkbox_submit()">Belongs to CS</button>
                         <button type="button" class="btn btn-danger" onclick="checkbox_submit()">Does not belong to CS</button>
+                        <button type="button" class="btn btn-primary" onclick="checkbox_submit_add()">Add to filter</button>
                       </div>
                     </div>
                   </div>
@@ -246,17 +247,33 @@
 
       let table_map = new Map();
       var search_val = "";
+<<<<<<< HEAD
       let checkbox_counter = 0;
+=======
+      let checkbox_counter = 0
+      var index_clicked = []
+>>>>>>> 83db4947972802a085ca76a4f2bf51f05ab80c3a
       
       // show checkboxes to classify checkboxes
-      function show_checkbox_classify() {
+      function show_checkbox_classify(i) {
         document.getElementById("classify_checkbox").hidden = false;
+        index_clicked.push(i);
       }
 
       // checkbox submit
       function checkbox_submit(){ 
         location.reload();
         return false;
+      }
+
+      function checkbox_submit_add() {
+        var keywords_str = document.getElementById("grab_keyords").innerHTML;
+        var keywords_str_res = keywords_str.split("|");
+        var result = []
+        for (var i = 0; i < index_clicked.length; i++) {
+            result.push(keywords_str_res[index_clicked[i]])
+        }
+        document.getElementById("search_input").value = result;
       }
 
       // generate iframe
@@ -305,7 +322,17 @@
           record = record.concat(i.toString());
           record = record.concat("\">");
 
+<<<<<<< HEAD
           record = record.concat(curr_group_res[0]);
+=======
+          record = record.concat("<td>");
+          record = record.concat('<input type="checkbox" id="checkbox ');
+          record = record.concat(i);
+          record = record.concat('\" onclick="show_checkbox_classify(');
+          record = record.concat(i);
+          record = record.concat(')"> ');
+          record = record.concat("</td>");  
+>>>>>>> 83db4947972802a085ca76a4f2bf51f05ab80c3a
           
 
           record = record.concat("</button>");

@@ -266,6 +266,7 @@ def add_entry_domain_tool(request):
 
     # get main keyword 
     main_keyword = request.POST.get("input_keyword_main").lower()
+    print(main_keyword)
 
     # get user response
     user_response = request.POST.get("user_selection")
