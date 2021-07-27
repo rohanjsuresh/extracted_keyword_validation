@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Keyword_Pages
+from .models import Keyword_Grouping
 from .models import Pairs_In_Circulation
 from .models import Correct_Pairs
 from .models import Incorrect_Pairs
@@ -27,6 +28,9 @@ import spacy
 from whoosh.index import create_in
 from whoosh.index import open_dir
 from whoosh.fields import *
+from collections import defaultdict
+from django.http import HttpResponseRedirect
+
 
 # Create your views here.
 
@@ -42,8 +46,12 @@ def home(request):
 # def keyword_pages_default(request):
 #     return keyword_pages(request, 0)
 
-def keyword_pages(request):
+def pagination(request):
+    page_num = request.POST.get("page_num")
+    return keyword_pages_w_page(request, int(page_num))
+    # return dynamic_lookup_view(request, search_input)
 
+def keyword_pages(request):
     # TODO See if pagination required
     # # pagination
     # page_num = int(page_num)
@@ -51,7 +59,7 @@ def keyword_pages(request):
     # count = 0
 
     #render spreadsheet
-    all_keywords = Keyword_Pages.objects.order_by('keyword')
+    all_keywords = Keyword_Grouping.objects.order_by('keyword')
 
     context = {}
 
@@ -66,15 +74,314 @@ def keyword_pages(request):
 
     score_str = ""
 
+    new_score_map = {}
+    new_wiki_def_map = {}
+    new_rel_words = {}
+
+    count = 0
     for keywords in all_keywords:
+        # # print(keywords.keyword)
+        if Keyword_Pages.objects.filter(keyword=keywords.keyword).first() is None:
+            continue
+        # # keywords = all_keywords[i]
+        # if "|" in keywords.keyword:
+        #     keywords.keyword = keywords.keyword.replace("|", " ")
+        count += 1
+        if count > 3320:
+            break
+        if first:
+            # keyword_str += keywords.keyword 
 
-        # keywords = all_keywords[i]
-        if "|" in keywords.keyword:
-            keywords.keyword = keywords.keyword.replace("|", " ")
+            if keywords.keyword in keyword_score_map.keys():
+                # score_str += str(keyword_score_map[keywords.keyword])
+                new_score_map[keywords.keyword] = str(keyword_score_map[keywords.keyword])
+            else:
+                # score_str += "1"
+                new_score_map[keywords.keyword] = 1
+        else: 
+            keyword_str += "|" + keywords.keyword
+
+            if keywords.keyword in keyword_score_map.keys():
+                # score_str += "|" + str(keyword_score_map[keywords.keyword])
+                new_score_map[keywords.keyword] = str(keyword_score_map[keywords.keyword])
+            else:
+                # score_str += "|1"
+                new_score_map[keywords.keyword] = 1
+
+        # print(keywords.keyword)
+        keywords = Keyword_Pages.objects.filter(keyword=keywords.keyword).first()
+
+        # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
+        if keywords.wiki_definition != "":
+            if first:
+                # wikipedia_content_str = keywords.wiki_definition
+                new_wiki_def_map[keywords.keyword] = keywords.wiki_definition
+            else:
+                # wikipedia_content_str += "|" + keywords.wiki_definition
+                new_wiki_def_map[keywords.keyword] = keywords.wiki_definition
+        else:
+            try:
+                # summary = wikipedia.summary(keywords.keyword, sentences=1)
+                summary = "test_wiki_def"
+                if first:
+                    # wikipedia_content_str = summary
+                    new_wiki_def_map[keywords.keyword] = summary
+                else: 
+                    # wikipedia_content_str += "|" + summary
+                    new_wiki_def_map[keywords.keyword] = summary
+
+            # except wikipedia.DisambiguationError as e:
+            #     s = e.options[0]
+            #     summary = wikipedia.summary(keywords.keyword, sentences=1)
+            #     if first:
+            #         wikipedia_content_str += summary
+            #     else: 
+            #         wikipedia_content_str += "|" + summary
+            except:
+                summary = "N/A / Disambiguation"
+                if first:
+                    # wikipedia_content_str = summary
+                    new_wiki_def_map[keywords.keyword] = summary
+                else: 
+                    # wikipedia_content_str += "|" + summary
+                    new_wiki_def_map[keywords.keyword] = summary
+
+            keywords.wiki_definition = summary
+            keywords.save()
+
+
+        if first:
+            # related_keywords_str = keywords.matched_with 
+            new_rel_words[keywords.keyword] = keywords.matched_with 
+        else: 
+            # Different delimeter used because DB uses '|' and ',' as delimeter
+            related_keywords_str += "&" + keywords.matched_with
+            new_rel_words[keywords.keyword] = keywords.matched_with 
+
+        first = False
+
+    group_map = defaultdict(list)
+    count = 0
+    for keywords in all_keywords:
+        count += 1
+        if count > 3320:
+            break
+        group_map[keywords.group].append(keywords.keyword)
+
+    wikipedia_content_str = ""
+    related_keywords_str = ""
+    score_str = ""
+
+
+    # print(group_map)
+    group_map_str = ""
+    for key in group_map:
+        first = True
+        for val in group_map[key]:
+            if val not in new_wiki_def_map.keys():
+                continue
+            if first == True:
+                group_map_str += val
+                first = False
+            else:
+                group_map_str += "*" + val
+
+                wikipedia_content_str += "|" + new_wiki_def_map[val]
+                wikipedia_content_str += "|" + "test_wiki_def"
+            related_keywords_str += "|" + new_rel_words[val]
+            score_str += "|" + new_score_map[val]
+        group_map_str += "|"
+
+    # context["keywords"] = keyword_str 
+    context["wikipedia_content"] = wikipedia_content_str[1:]
+    context["related_keywords"] = related_keywords_str[1:]
+    context["score_map"] = score_str[1:]
+    context["group_map"] = group_map_str[1:-1]
+
+    # print(keyword_str)
+    # print(related_keywords_str)
+
+    return render(request, 'keyword_relation/keyword_pages_default.html', context)
+
+
+def keyword_pages_w_page(request, page_num):
+    # TODO See if pagination required
+    # # pagination
+    # page_num = int(page_num)
+    # num_per_page = 20
+    # count = 0
+
+    #render spreadsheet
+    all_keywords = Keyword_Grouping.objects.order_by('keyword')
+
+    context = {}
+
+    keyword_str = ""
+    wikipedia_content_str = ""
+    related_keywords_str = ""
+    first = True
+
+    score_map = os.path.join(settings.STATIC_ROOT,'../arxiv_data/keyword_score_map.pkl')
+    with open(score_map, 'rb') as input:
+        keyword_score_map = pickle.load(input)
+
+    score_str = ""
+
+    new_score_map = {}
+    new_wiki_def_map = {}
+    new_rel_words = {}
+
+    # count_min = 3320*(page_num-1)
+    # count_max = 3328*page_num
+    # count = 0
+
+    for keywords in all_keywords:
+        # # print(keywords.keyword)
+        if Keyword_Pages.objects.filter(keyword=keywords.keyword).first() is None:
+            continue
+        # # keywords = all_keywords[i]
+        # if "|" in keywords.keyword:
+        #     keywords.keyword = keywords.keyword.replace("|", " ")
         # count += 1
-        # if count > num_per_page:
+        # if count < count_min:
+        #     continue
+        # if count > count_max:
         #     break
+        if first:
+            # keyword_str += keywords.keyword 
 
+            if keywords.keyword in keyword_score_map.keys():
+                # score_str += str(keyword_score_map[keywords.keyword])
+                new_score_map[keywords.keyword] = str(keyword_score_map[keywords.keyword])
+            else:
+                # score_str += "1"
+                new_score_map[keywords.keyword] = 1
+        else: 
+            keyword_str += "|" + keywords.keyword
+
+            if keywords.keyword in keyword_score_map.keys():
+                # score_str += "|" + str(keyword_score_map[keywords.keyword])
+                new_score_map[keywords.keyword] = str(keyword_score_map[keywords.keyword])
+            else:
+                # score_str += "|1"
+                new_score_map[keywords.keyword] = 1
+
+        # print(keywords.keyword)
+        keywords = Keyword_Pages.objects.filter(keyword=keywords.keyword).first()
+
+        # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
+        if keywords.wiki_definition != "":
+            if first:
+                # wikipedia_content_str = keywords.wiki_definition
+                new_wiki_def_map[keywords.keyword] = keywords.wiki_definition
+            else:
+                # wikipedia_content_str += "|" + keywords.wiki_definition
+                new_wiki_def_map[keywords.keyword] = keywords.wiki_definition
+        else:
+            try:
+                # summary = wikipedia.summary(keywords.keyword, sentences=1)
+                summary = "test_wiki_def"
+                if first:
+                    # wikipedia_content_str = summary
+                    new_wiki_def_map[keywords.keyword] = summary
+                else: 
+                    # wikipedia_content_str += "|" + summary
+                    new_wiki_def_map[keywords.keyword] = summary
+
+            # except wikipedia.DisambiguationError as e:
+            #     s = e.options[0]
+            #     summary = wikipedia.summary(keywords.keyword, sentences=1)
+            #     if first:
+            #         wikipedia_content_str += summary
+            #     else: 
+            #         wikipedia_content_str += "|" + summary
+            except:
+                summary = "N/A / Disambiguation"
+                if first:
+                    # wikipedia_content_str = summary
+                    new_wiki_def_map[keywords.keyword] = summary
+                else: 
+                    # wikipedia_content_str += "|" + summary
+                    new_wiki_def_map[keywords.keyword] = summary
+
+            keywords.wiki_definition = summary
+            keywords.save()
+
+
+        if first:
+            # related_keywords_str = keywords.matched_with 
+            new_rel_words[keywords.keyword] = keywords.matched_with 
+        else: 
+            # Different delimeter used because DB uses '|' and ',' as delimeter
+            related_keywords_str += "&" + keywords.matched_with
+            new_rel_words[keywords.keyword] = keywords.matched_with 
+
+        first = False
+
+    group_map = defaultdict(list)
+    count_min = 3320*(page_num-1)
+    count_max = 3328*page_num
+    count = 0
+
+    for keywords in all_keywords:
+        count += 1
+        if count < count_min:
+            continue
+        if count > count_max:
+            break
+        group_map[keywords.group].append(keywords.keyword)
+
+    wikipedia_content_str = ""
+    related_keywords_str = ""
+    score_str = ""
+
+
+    # print(group_map)
+    group_map_str = ""
+    for key in group_map:
+        first = True
+        for val in group_map[key]:
+            if val not in new_wiki_def_map.keys():
+                continue
+            if first == True:
+                group_map_str += val
+                first = False
+            else:
+                group_map_str += "*" + val
+
+                wikipedia_content_str += "|" + new_wiki_def_map[val]
+                wikipedia_content_str += "|" + "test_wiki_def"
+            related_keywords_str += "|" + new_rel_words[val]
+            score_str += "|" + new_score_map[val]
+        group_map_str += "|"
+
+    # context["keywords"] = keyword_str 
+    context["wikipedia_content"] = wikipedia_content_str[1:]
+    context["related_keywords"] = related_keywords_str[1:]
+    context["score_map"] = score_str[1:]
+    context["group_map"] = group_map_str[:-1]
+
+    # print(keyword_str)
+    # print(related_keywords_str)
+
+    return render(request, 'keyword_relation/keyword_pages_default.html', context)
+def keyword_pages_default_adv_search_1(request, context = {}):
+    #render spreadsheet
+    all_keywords = Keyword_Pages.objects.all()
+
+    keyword_str = ""
+    wikipedia_content_str = ""
+    related_keywords_str = ""
+    first = True
+
+    score_map = os.path.join(settings.STATIC_ROOT,'../arxiv_data/keyword_score_map.pkl')
+    with open(score_map, 'rb') as input:
+        keyword_score_map = pickle.load(input)
+
+    score_str = ""
+
+
+    for keywords in all_keywords:
         if first:
             keyword_str += keywords.keyword 
 
@@ -89,74 +396,6 @@ def keyword_pages(request):
                 score_str += "|" + str(keyword_score_map[keywords.keyword])
             else:
                 score_str += "|1"
-
-        # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
-        if keywords.wiki_definition != "":
-            if first:
-                wikipedia_content_str = keywords.wiki_definition
-            else:
-                wikipedia_content_str += "|" + keywords.wiki_definition
-        else:
-            try:
-                # summary = wikipedia.summary(keywords.keyword, sentences=1)
-                summary = "test_wiki_def"
-                if first:
-                    wikipedia_content_str = summary
-                else: 
-                    wikipedia_content_str += "|" + summary
-
-            # except wikipedia.DisambiguationError as e:
-            #     s = e.options[0]
-            #     summary = wikipedia.summary(keywords.keyword, sentences=1)
-            #     if first:
-            #         wikipedia_content_str += summary
-            #     else: 
-            #         wikipedia_content_str += "|" + summary
-            except:
-                summary = "N/A / Disambiguation"
-                if first:
-                    wikipedia_content_str = summary
-                else: 
-                    wikipedia_content_str += "|" + summary
-
-            keywords.wiki_definition = summary
-            keywords.save()
-
-
-        if first:
-            related_keywords_str = keywords.matched_with 
-        else: 
-            # Different delimeter used because DB uses '|' and ',' as delimeter
-            related_keywords_str += "&" + keywords.matched_with
-
-        first = False
-
-    context["keywords"] = keyword_str 
-    context["wikipedia_content"] = wikipedia_content_str
-    context["related_keywords"] = related_keywords_str
-    print(score_str[:-1000])
-    context["score_map"] = score_str
-
-    # print(keyword_str)
-    # print(related_keywords_str)
-
-    return render(request, 'keyword_relation/keyword_pages_default.html', context)
-
-def keyword_pages_default_adv_search_1(request, context = {}):
-    #render spreadsheet
-    all_keywords = Keyword_Pages.objects.all()
-
-    keyword_str = ""
-    wikipedia_content_str = ""
-    related_keywords_str = ""
-    first = True
-
-
-    for keywords in all_keywords:
-        if first:
-            keyword_str += keywords.keyword 
-        else: 
-            keyword_str += "|" + keywords.keyword
 
         # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
         if keywords.wiki_definition != "":
@@ -201,6 +440,7 @@ def keyword_pages_default_adv_search_1(request, context = {}):
     context["keywords"] = keyword_str 
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
+    context["score_map"] = score_str
 
     # print(keyword_str)
     # print(related_keywords_str)
@@ -218,12 +458,28 @@ def keyword_pages_default_adv_search_2(request, to_return, context = {},):
     print("To Return")
     print(to_return)
 
+    score_map = os.path.join(settings.STATIC_ROOT,'../arxiv_data/keyword_score_map.pkl')
+    with open(score_map, 'rb') as input:
+        keyword_score_map = pickle.load(input)
+
+    score_str = ""
+    
     for keywords in all_keywords:
         if keywords.keyword in to_return:
             if first:
                 keyword_str += keywords.keyword 
+
+                if keywords.keyword in keyword_score_map.keys():
+                    score_str += str(keyword_score_map[keywords.keyword])
+                else:
+                    score_str += "1"
             else: 
                 keyword_str += "|" + keywords.keyword
+
+                if keywords.keyword in keyword_score_map.keys():
+                    score_str += "|" + str(keyword_score_map[keywords.keyword])
+                else:
+                    score_str += "|1"
 
             # https://stackoverflow.com/questions/25946692/wikipedia-disambiguation-error
             if keywords.wiki_definition != "":
@@ -268,6 +524,7 @@ def keyword_pages_default_adv_search_2(request, to_return, context = {},):
     context["keywords"] = keyword_str
     context["wikipedia_content"] = wikipedia_content_str
     context["related_keywords"] = related_keywords_str
+    context["score_map"] = score_str
     context["result"] = to_return[:20]
 
     print("Results")
@@ -772,39 +1029,44 @@ def search_similar_result(request):
     return find_similar_keywords_result(request, features)
 
 # Kino: find similar keyword code ##################
-def add_to_filter(request):
+# def add_to_filter(request):
 
-    # get main keyword 
-    main_keyword = request.POST.get("input_keyword").lower()
-    print("hello" + main_keyword)
+#     # get main keyword 
+#     main_keyword = request.POST.get("input_keyword").lower()
+#     print("hello" + main_keyword)
 
-    context = {"input":main_keyword}
+#     context = {"input":main_keyword}
 
-    # return render(request, 'keyword_relation/find_similar_keyword_default.html', context)
-    return render(request, 'keyword_relation/keyword_pages_default2.html', context)
+#     # return render(request, 'keyword_relation/find_similar_keyword_default.html', context)
+#     return render(request, 'keyword_relation/keyword_pages_default2.html', context)
 
 
 
 colnames = ["id","keyword","ngram","length","pos","abstractID", "score"]
-data = pandas.read_csv('/Users/mac/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
+try:
+    data = pandas.read_csv('/Users/mac/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
+except:
+    data = pandas.read_csv('/Users/rohansuresh/Desktop/extracted_keyword_validation/arxiv_data/cs_keywords.csv', names = colnames)
 keywords = data.keyword.to_list()[1:5000]
 length = data.length.to_list()[1:5000]
 pos = data.pos.to_list()[1:5000]
 score = data.score.to_list()[1:5000]
 
-f = open('/Users/mac/Desktop/Keyword Research/similar_title/arxiv_abstracts_cornell.txt', 'r')
-abstracts = f.readlines()[:3000]
-abstracts_num = len(abstracts)
+# TODO: put files on owl/git
 
-f = open('/Users/mac/Desktop/anc_VOL15_3.txt', 'r')
-english_corpus = f.readlines()
-english_corpus_num = len(english_corpus)
+# f = open('/Users/mac/Desktop/Keyword Research/similar_title/arxiv_abstracts_cornell.txt', 'r')
+# abstracts = f.readlines()[:3000]
+# abstracts_num = len(abstracts)
 
-f = open('/Users/mac/Desktop/1000_common_words.txt', 'r')
-common_words = f.readlines()
+# f = open('/Users/mac/Desktop/anc_VOL15_3.txt', 'r')
+# english_corpus = f.readlines()
+# english_corpus_num = len(english_corpus)
 
-tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
-model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
+# f = open('/Users/mac/Desktop/1000_common_words.txt', 'r')
+# common_words = f.readlines()
+
+# tokenizer = AutoTokenizer.from_pretrained('allenai/scibert_scivocab_uncased')
+# model = AutoModel.from_pretrained('allenai/scibert_scivocab_uncased')
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -825,37 +1087,37 @@ def npmi(word_list1, word_list2, N):
     return npmi
 
 
-def create_hit_list(keywords, abstracts):
-    """
-        format of hit_list: dictionary
-        {each keyword:[abstract_id1, abstract_id2...]}
-    """
-    schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
+# def create_hit_list(keywords, abstracts):
+#     """
+#         format of hit_list: dictionary
+#         {each keyword:[abstract_id1, abstract_id2...]}
+#     """
+#     schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
 
-    if not os.path.exists("index"):
-        os.mkdir("index")
-    ix = create_in("index",schema)
-    ix = open_dir("index")
+#     if not os.path.exists("index"):
+#         os.mkdir("index")
+#     ix = create_in("index",schema)
+#     ix = open_dir("index")
 
-    writer = ix.writer()
-    for i in range(len(abstracts)):
-        writer.add_document(title=str(i), content=abstracts[i])
-    writer.commit()
+#     writer = ix.writer()
+#     for i in range(len(abstracts)):
+#         writer.add_document(title=str(i), content=abstracts[i])
+#     writer.commit()
 
-    searcher = ix.searcher()
+#     searcher = ix.searcher()
 
-    dic = {}
-    for k in keywords:
-        results = searcher.find("content", k)
-        dic[k] = []
-        for r in results:
-            dic[k].append(int(r["title"]))
+#     dic = {}
+#     for k in keywords:
+#         results = searcher.find("content", k)
+#         dic[k] = []
+#         for r in results:
+#             dic[k].append(int(r["title"]))
 
-    return dic
+#     return dic
 
 
-hit_dic = create_hit_list(keywords, abstracts)
-hit_dic2 = create_hit_list(keywords, english_corpus)
+# hit_dic = create_hit_list(keywords, abstracts)
+# hit_dic2 = create_hit_list(keywords, english_corpus)
 
 def embed_text(text, model):
     input_ids = torch.tensor(tokenizer.encode(text)).unsqueeze(0)  # Batch size 1
