@@ -72,6 +72,9 @@ def keyword_pages(request):
     with open(score_map, 'rb') as input:
         keyword_score_map = pickle.load(input)
 
+    # print("LOOK \n \n \n ")
+    # print(keyword_score_map)
+
     score_str = ""
 
     new_score_map = {}
@@ -196,9 +199,9 @@ def keyword_pages(request):
     context["wikipedia_content"] = wikipedia_content_str[1:]
     context["related_keywords"] = related_keywords_str[1:]
     context["score_map"] = score_str[1:]
-    context["group_map"] = group_map_str[1:-1]
+    context["group_map"] = group_map_str[:-1]
 
-    # print(keyword_str)
+    print(group_map_str[:2000])
     # print(related_keywords_str)
 
     return render(request, 'keyword_relation/keyword_pages_default.html', context)
@@ -377,6 +380,9 @@ def keyword_pages_default_adv_search_1(request, context = {}):
     score_map = os.path.join(settings.STATIC_ROOT,'../arxiv_data/keyword_score_map.pkl')
     with open(score_map, 'rb') as input:
         keyword_score_map = pickle.load(input)
+
+    print("LOOK \n \n \n ")
+    print(keyword_score_map)
 
     score_str = ""
 
